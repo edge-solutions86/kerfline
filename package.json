@@ -1,0 +1,35 @@
+{
+  "name": "kerfline",
+  "version": "0.1.0",
+  "description": "Radiographic technique planning and film interpretation for weld inspection",
+  "type": "module",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "node": ">=20.11"
+  },
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "bin"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "9.4.0",
+    "@vitest/coverage-v8": "1.6.0",
+    "eslint": "9.4.0",
+    "globals": "15.4.0",
+    "prettier": "3.3.2",
+    "vitest": "1.6.0"
+  }
+}

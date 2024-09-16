@@ -1,5 +1,6 @@
 import { BadInput } from '../errors.js';
-import { isFiniteNumber, round } from '../util/num.js';
+import { round } from '../util/num.js';
+import { requireAbove, requireAtLeast } from '../util/guard.js';
 
 /**
  * The three distances a setup is described by, and the relations between
@@ -113,27 +114,4 @@ export function resolveDistances(given) {
     objectToFilmIn: round(ofd, 4),
     magnification: round(magnification({ sourceToObjectIn: sod, objectToFilmIn: ofd }), 4),
   };
-}
-
-function requireAbove(value, floor, what) {
-  requireNumber(value, what);
-  if (value <= floor) {
-    throw new BadInput(`${what} must be greater than ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireAtLeast(value, floor, what) {
-  requireNumber(value, what);
-  if (value < floor) {
-    throw new BadInput(`${what} must not be below ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireNumber(value, what) {
-  if (!isFiniteNumber(value)) {
-    throw new BadInput(`${what} must be a finite number`, { got: value });
-  }
-  return value;
 }

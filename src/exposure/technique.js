@@ -1,5 +1,4 @@
-import { BadInput } from '../errors.js';
-import { isFiniteNumber, round } from '../util/num.js';
+import { round } from '../util/num.js';
 import { isotope } from '../isotope/catalog.js';
 import { activityAfter } from '../isotope/decay.js';
 import { chartExposure, chartReference } from './chart.js';
@@ -7,6 +6,7 @@ import { convertExposure } from './filmclass.js';
 import { screenFactor } from './screens.js';
 import { aimAtDensity } from './aim.js';
 import { scaleExposure, minutesForCurieMinutes } from './law.js';
+import { requireAbove, requireAtLeast, requireNumber } from '../util/guard.js';
 
 /**
  * The whole exposure calculation, in the order the shop does it on paper.
@@ -110,27 +110,4 @@ export function timerSetting(minutes, marginFraction = 0.1) {
   requireAbove(minutes, 0, 'exposure time');
   requireAtLeast(marginFraction, 0, 'margin');
   return Math.ceil(minutes * (1 + marginFraction) * 60);
-}
-
-function requireAbove(value, floor, what) {
-  requireNumber(value, what);
-  if (value <= floor) {
-    throw new BadInput(`${what} must be greater than ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireAtLeast(value, floor, what) {
-  requireNumber(value, what);
-  if (value < floor) {
-    throw new BadInput(`${what} must not be below ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireNumber(value, what) {
-  if (!isFiniteNumber(value)) {
-    throw new BadInput(`${what} must be a finite number`, { got: value });
-  }
-  return value;
 }

@@ -1,6 +1,6 @@
-import { BadInput, Unsupported } from '../errors.js';
-import { isFiniteNumber } from '../util/num.js';
+import { Unsupported } from '../errors.js';
 import { isSmallBore } from './pipe.js';
+import { requireAbove } from '../util/guard.js';
 
 /**
  * Which viewing technique a joint gets shot with, and what that choice then
@@ -131,14 +131,4 @@ export function viewingPlan({
     penetratedThicknessIn: penetratedThicknessIn(technique.name, wallIn),
     readsBothWalls: technique.name.startsWith('DWDI'),
   };
-}
-
-function requireAbove(value, floor, what) {
-  if (!isFiniteNumber(value)) {
-    throw new BadInput(`${what} must be a finite number`, { got: value });
-  }
-  if (value <= floor) {
-    throw new BadInput(`${what} must be greater than ${floor}`, { got: value });
-  }
-  return value;
 }

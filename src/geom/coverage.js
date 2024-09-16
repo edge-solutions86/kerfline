@@ -1,6 +1,7 @@
 import { BadInput } from '../errors.js';
-import { isFiniteNumber, round } from '../util/num.js';
+import { round } from '../util/num.js';
 import { outsideRadius, clockFromDegrees } from './pipe.js';
+import { requireAbove, requireNumber } from '../util/guard.js';
 
 /**
  * How much of a circumferential weld one shot actually covers.
@@ -141,19 +142,4 @@ function geometry(odIn, sourceToObjectIn) {
   const radius = outsideRadius(odIn);
   requireAbove(sourceToObjectIn, 0, 'source to object distance');
   return { radius, axis: radius + sourceToObjectIn };
-}
-
-function requireAbove(value, floor, what) {
-  requireNumber(value, what);
-  if (value <= floor) {
-    throw new BadInput(`${what} must be greater than ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireNumber(value, what) {
-  if (!isFiniteNumber(value)) {
-    throw new BadInput(`${what} must be a finite number`, { got: value });
-  }
-  return value;
 }

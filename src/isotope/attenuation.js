@@ -1,7 +1,7 @@
 import { BadInput, NotFound } from '../errors.js';
 import { isotope, normaliseId } from './catalog.js';
-import { isFiniteNumber } from '../util/num.js';
 import { convert } from '../util/units.js';
+import { requireNumber as requireFinite } from '../util/guard.js';
 
 /**
  * How much of a beam a given material stops. Two jobs lean on this: working
@@ -92,11 +92,4 @@ export function wallInHalfValueLayers(idOrLabel, wallIn) {
   requireFinite(wallIn, 'wall thickness');
   if (wallIn <= 0) throw new BadInput('wall thickness must be above zero', { wallIn });
   return wallIn / halfValueLayerIn(idOrLabel, 'steel');
-}
-
-function requireFinite(value, what) {
-  if (!isFiniteNumber(value)) {
-    throw new BadInput(`${what} must be a finite number`, { got: value });
-  }
-  return value;
 }

@@ -1,5 +1,6 @@
 import { BadInput } from '../errors.js';
-import { isFiniteNumber, round } from '../util/num.js';
+import { round } from '../util/num.js';
+import { requireAbove, requireNumber } from '../util/guard.js';
 
 /**
  * Pipe geometry, and the clock face the whole trade locates things on.
@@ -118,19 +119,4 @@ export function pipeSummary(odIn, wallIn) {
     circumferenceIn: round(circumference(odIn), 3),
     smallBore: isSmallBore(odIn),
   };
-}
-
-function requireAbove(value, floor, what) {
-  requireNumber(value, what);
-  if (value <= floor) {
-    throw new BadInput(`${what} must be greater than ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireNumber(value, what) {
-  if (!isFiniteNumber(value)) {
-    throw new BadInput(`${what} must be a finite number`, { got: value });
-  }
-  return value;
 }

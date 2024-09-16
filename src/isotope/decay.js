@@ -1,6 +1,7 @@
 import { BadInput } from '../errors.js';
 import { isotope } from './catalog.js';
-import { isFiniteNumber, round } from '../util/num.js';
+import { round } from '../util/num.js';
+import { requireNumber as requireFinite, requirePositive } from '../util/guard.js';
 
 /**
  * Source decay. A camera loaded in March is not the camera it was in June,
@@ -92,17 +93,4 @@ export function decayTable(idOrLabel, startCi, dayOffsets, options = {}) {
  */
 export function exposureMultiplier(halfLifeDays, elapsedDays) {
   return 1 / decayFactor(halfLifeDays, elapsedDays);
-}
-
-function requireFinite(value, what) {
-  if (!isFiniteNumber(value)) {
-    throw new BadInput(`${what} must be a finite number`, { got: value });
-  }
-  return value;
-}
-
-function requirePositive(value, what) {
-  requireFinite(value, what);
-  if (value <= 0) throw new BadInput(`${what} must be greater than zero`, { got: value });
-  return value;
 }

@@ -1,5 +1,6 @@
 import { BadInput, Unsupported } from '../errors.js';
-import { isFiniteNumber, round } from '../util/num.js';
+import { round } from '../util/num.js';
+import { requireAtLeast } from '../util/guard.js';
 
 /**
  * Where the indicator goes, and the shim that has to go under it.
@@ -100,14 +101,4 @@ function requirePlacement(placement) {
     });
   }
   return placement;
-}
-
-function requireAtLeast(value, floor, what) {
-  if (!isFiniteNumber(value)) {
-    throw new BadInput(`${what} must be a finite number`, { got: value });
-  }
-  if (value < floor) {
-    throw new BadInput(`${what} must not be below ${floor}`, { got: value });
-  }
-  return value;
 }

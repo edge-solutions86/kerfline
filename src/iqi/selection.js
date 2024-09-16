@@ -3,6 +3,7 @@ import { isFiniteNumber, round } from '../util/num.js';
 import { bandTable, bandRow } from '../util/band.js';
 import { holeIqi } from './holetype.js';
 import { wireDiameterIn, preferredSetForWire } from './wire.js';
+import { requireAbove, requireAtLeast } from '../util/guard.js';
 
 /**
  * Choosing the indicator.
@@ -134,27 +135,4 @@ function requireSide(side) {
     });
   }
   return side;
-}
-
-function requireAbove(value, floor, what) {
-  requireNumber(value, what);
-  if (value <= floor) {
-    throw new BadInput(`${what} must be greater than ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireAtLeast(value, floor, what) {
-  requireNumber(value, what);
-  if (value < floor) {
-    throw new BadInput(`${what} must not be below ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireNumber(value, what) {
-  if (!isFiniteNumber(value)) {
-    throw new BadInput(`${what} must be a finite number`, { got: value });
-  }
-  return value;
 }

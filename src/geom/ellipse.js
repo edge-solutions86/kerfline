@@ -1,6 +1,6 @@
-import { BadInput } from '../errors.js';
-import { isFiniteNumber, round } from '../util/num.js';
+import { round } from '../util/num.js';
 import { isSmallBore } from './pipe.js';
+import { requireAbove, requireAtLeast } from '../util/guard.js';
 
 /**
  * The elliptical shot on small bore.
@@ -80,27 +80,4 @@ export function offsetIsAcceptable({ odIn, sourceToObjectIn, offsetIn, weldWidth
   const separation = imageSeparationIn({ odIn, sourceToObjectIn, offsetIn });
   const window = separationWindowIn(weldWidthIn);
   return separation >= window.minimumIn && separation <= window.maximumIn;
-}
-
-function requireAbove(value, floor, what) {
-  requireNumber(value, what);
-  if (value <= floor) {
-    throw new BadInput(`${what} must be greater than ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireAtLeast(value, floor, what) {
-  requireNumber(value, what);
-  if (value < floor) {
-    throw new BadInput(`${what} must not be below ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireNumber(value, what) {
-  if (!isFiniteNumber(value)) {
-    throw new BadInput(`${what} must be a finite number`, { got: value });
-  }
-  return value;
 }

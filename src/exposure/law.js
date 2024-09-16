@@ -1,5 +1,4 @@
-import { BadInput } from '../errors.js';
-import { isFiniteNumber } from '../util/num.js';
+import { requireAbove, requireAtLeast } from '../util/guard.js';
 
 /**
  * The two laws every exposure calculation goes through.
@@ -86,27 +85,4 @@ export function equivalentExposure(a, b, tolerance = 0.02) {
   const larger = Math.max(left, right);
   if (larger === 0) return true;
   return Math.abs(left - right) / larger <= tolerance;
-}
-
-function requireAbove(value, floor, what) {
-  requireNumber(value, what);
-  if (value <= floor) {
-    throw new BadInput(`${what} must be greater than ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireAtLeast(value, floor, what) {
-  requireNumber(value, what);
-  if (value < floor) {
-    throw new BadInput(`${what} must not be below ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireNumber(value, what) {
-  if (!isFiniteNumber(value)) {
-    throw new BadInput(`${what} must be a finite number`, { got: value });
-  }
-  return value;
 }

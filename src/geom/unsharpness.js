@@ -1,6 +1,6 @@
-import { BadInput } from '../errors.js';
-import { isFiniteNumber, round } from '../util/num.js';
+import { round } from '../util/num.js';
 import { bandTable, bandValue } from '../util/band.js';
+import { requireAbove, requireAtLeast } from '../util/guard.js';
 
 /**
  * Geometric unsharpness. The source is not a point, so every edge in the weld
@@ -81,27 +81,4 @@ export function checkUnsharpness(setup) {
     minimumSourceToObjectIn: round(minimum, 2),
     shortfallIn: ug <= limitIn ? 0 : round(minimum - sourceToObjectIn, 2),
   };
-}
-
-function requireAbove(value, floor, what) {
-  requireNumber(value, what);
-  if (value <= floor) {
-    throw new BadInput(`${what} must be greater than ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireAtLeast(value, floor, what) {
-  requireNumber(value, what);
-  if (value < floor) {
-    throw new BadInput(`${what} must not be below ${floor}`, { got: value });
-  }
-  return value;
-}
-
-function requireNumber(value, what) {
-  if (!isFiniteNumber(value)) {
-    throw new BadInput(`${what} must be a finite number`, { got: value });
-  }
-  return value;
 }

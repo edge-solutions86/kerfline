@@ -74,7 +74,7 @@ export function judgeArea(readings, referenceDensity) {
   }
   const judged = readings.map((reading, index) => {
     const value = typeof reading === 'object' && reading !== null ? reading.density : reading;
-    const at = typeof reading === 'object' && reading !== null ? reading.at ?? null : null;
+    const at = typeof reading === 'object' && reading !== null ? (reading.at ?? null) : null;
     if (typeof value !== 'number') {
       throw new BadInput(`reading ${index + 1} has no density on it`, { got: reading });
     }

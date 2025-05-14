@@ -2,7 +2,8 @@ import { round } from '../util/num.js';
 import { bandTable, bandValue } from '../util/band.js';
 import { requireArray, requireAbove } from '../util/guard.js';
 import { governingSizeIn } from '../indication/measure.js';
-import { makeVerdict, accept, combine } from './verdict.js';
+import { makeVerdict, accept } from './verdict.js';
+import { rejectPlanar, settle } from './common.js';
 
 /**
  * ASME Section VIII Division 1, UW-51, for fully radiographed pressure welds.
@@ -88,14 +89,7 @@ export function alignedGroups(indications) {
 /** Any crack, lack of fusion or lack of penetration takes the weld out. */
 export function judgePlanar(indication) {
   if (!indication.planar) return accept(CODE, CLAUSE);
-  return makeVerdict({
-    disposition: 'reject',
-    code: CODE,
-    clause: `${CLAUSE}(1)`,
-    reason: `${indication.label} is not permitted at any size`,
-    indication,
-    measured: governingSizeIn(indication),
-  });
+  return rejectPlanar({ code: CODE, clause: `${CLAUSE}(1)`, indication });
 }
 
 export function judgeElongated(indication, thicknessIn) {
@@ -149,6 +143,5 @@ export function judgeJoint({ indications, thicknessIn }) {
     indications.filter((indication) => !indication.planar),
     thicknessIn
   );
-  const all = [...single, ...grouped];
-  return combine(all.length === 0 ? [accept(CODE, CLAUSE)] : all, { code: CODE });
+  return settle([...single, ...grouped], { code: CODE, clause: CLAUSE });
 }

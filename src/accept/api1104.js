@@ -1,7 +1,8 @@
 import { round } from '../util/num.js';
 import { requireArray, requireAbove } from '../util/guard.js';
 import { governingSizeIn, cumulativeLengthIn, worstWindow } from '../indication/measure.js';
-import { makeVerdict, accept, combine } from './verdict.js';
+import { makeVerdict, accept } from './verdict.js';
+import { settle } from './common.js';
 
 /**
  * API 1104 acceptance, for girth welds in pipeline service.
@@ -234,6 +235,5 @@ export function judgeJoint({ indications, wallIn, weldLengthIn }) {
   const aggregate = Object.keys(RULES).flatMap((typeId) =>
     judgeAggregate(indications, typeId, weldLengthIn)
   );
-  const all = [...perIndication, ...aggregate];
-  return combine(all.length === 0 ? [accept(CODE, '9.3')] : all, { code: CODE });
+  return settle([...perIndication, ...aggregate], { code: CODE, clause: '9.3' });
 }

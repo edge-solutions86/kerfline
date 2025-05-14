@@ -1,7 +1,8 @@
 import { round } from '../util/num.js';
 import { requireArray, requireAbove, requireOneOf } from '../util/guard.js';
 import { governingSizeIn, worstWindow, cumulativeLengthIn } from '../indication/measure.js';
-import { makeVerdict, accept, combine } from './verdict.js';
+import { makeVerdict, accept } from './verdict.js';
+import { rejectPlanar, settle } from './common.js';
 
 /**
  * ASME B31.3 process piping, Table 341.3.2.
@@ -88,17 +89,6 @@ export function undercutLimitIn(service, thinnerWallIn) {
   return round(Math.min(rules.undercutIn, thinnerWallIn * rules.undercutFraction), 4);
 }
 
-function reject(indication, reason, clause = CLAUSE) {
-  return makeVerdict({
-    disposition: 'reject',
-    code: CODE,
-    clause,
-    reason,
-    indication,
-    measured: governingSizeIn(indication),
-  });
-}
-
 function repair(indication, reason, measured, clause = CLAUSE) {
   return makeVerdict({
     disposition: 'repair',
@@ -116,12 +106,19 @@ export function judgeOne(indication, { service, thinnerWallIn }) {
   const size = governingSizeIn(indication);
 
   if (indication.type === 'CRACK' || indication.type === 'IF') {
-    return reject(indication, `${indication.label} is not permitted in any service`);
+    return rejectPlanar({ code: CODE, clause: CLAUSE, indication });
   }
 
   if (indication.type === 'IP') {
     if (!rules.penetrationPermitted) {
-      return reject(indication, `${indication.label} is not permitted in ${service} service`);
+      return makeVerdict({
+        disposition: 'reject',
+        code: CODE,
+        clause: CLAUSE,
+        reason: `${indication.label} is not permitted in ${service} service`,
+        indication,
+        measured: size,
+      });
     }
     return accept(CODE, CLAUSE);
   }
@@ -194,6 +191,5 @@ export function judgeJoint({ indications, thinnerWallIn, service = 'normal' }) {
     judgeOne(indication, { service, thinnerWallIn })
   );
   const cumulative = judgeCumulative(indications, thinnerWallIn);
-  const all = [...single, ...cumulative];
-  return combine(all.length === 0 ? [accept(CODE, CLAUSE)] : all, { code: CODE });
+  return settle([...single, ...cumulative], { code: CODE, clause: CLAUSE });
 }

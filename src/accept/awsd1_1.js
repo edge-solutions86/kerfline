@@ -1,7 +1,8 @@
 import { round } from '../util/num.js';
 import { requireArray, requireAbove, requireOneOf } from '../util/guard.js';
 import { governingSizeIn } from '../indication/measure.js';
-import { makeVerdict, accept, combine } from './verdict.js';
+import { makeVerdict, accept } from './verdict.js';
+import { rejectPlanar, windowTotal, settle } from './common.js';
 
 /**
  * AWS D1.1 for structural welds.
@@ -81,14 +82,7 @@ export function requiredClearanceIn(largestIn, loading = 'static') {
 export function judgeOne(indication, { thicknessIn, loading = 'static' }) {
   const rules = rulesFor(loading);
   if (indication.planar) {
-    return makeVerdict({
-      disposition: 'reject',
-      code: CODE,
-      clause: rules.clause,
-      reason: `${indication.label} is not permitted at any size`,
-      indication,
-      measured: governingSizeIn(indication),
-    });
+    return rejectPlanar({ code: CODE, clause: rules.clause, indication });
   }
   const size = governingSizeIn(indication);
   const cap = maxDiscontinuityIn(thicknessIn, loading);
@@ -117,23 +111,15 @@ export function judgeSmallSum(indications, { loading = 'static' } = {}) {
     .filter((indication) => governingSizeIn(indication) < rules.smallIn);
   if (small.length === 0) return [];
 
-  let worst = { total: 0, startIn: 0 };
-  for (const anchor of small) {
-    const inside = small.filter(
-      (other) => other.at >= anchor.at && other.at < anchor.at + rules.windowIn
-    );
-    const total = inside.reduce((sum, other) => sum + governingSizeIn(other), 0);
-    if (total > worst.total) worst = { total: round(total, 4), startIn: anchor.at };
-  }
-
-  if (worst.total <= rules.sumIn) return [];
+  const worst = windowTotal(small, { windowIn: rules.windowIn });
+  if (worst.totalIn <= rules.sumIn) return [];
   return [
     makeVerdict({
       disposition: 'repair',
       code: CODE,
       clause: rules.clause,
-      reason: `small discontinuities total ${worst.total} in in one inch of weld, cap is ${rules.sumIn} in`,
-      measured: worst.total,
+      reason: `small discontinuities total ${worst.totalIn} in in one inch of weld, cap is ${rules.sumIn} in`,
+      measured: worst.totalIn,
     }),
   ];
 }
@@ -178,8 +164,8 @@ export function judgeJoint({ indications, thicknessIn, loading = 'static' }) {
   );
   const sums = judgeSmallSum(indications, { loading });
   const clearances = judgeClearance(indications, { loading });
-  const all = [...single, ...sums, ...clearances];
-  return combine(all.length === 0 ? [accept(CODE, rulesFor(loading).clause)] : all, {
+  return settle([...single, ...sums, ...clearances], {
     code: CODE,
+    clause: rulesFor(loading).clause,
   });
 }

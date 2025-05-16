@@ -27,6 +27,7 @@ export { planExposure, exposureFactors, timerSetting } from './exposure/techniqu
 export { chartExposure, chartRange } from './exposure/chart.js';
 export { film, films, meetsGrade } from './exposure/filmclass.js';
 export { defaultScreens, screenFactor } from './exposure/screens.js';
+export { planXray, kilovoltsFor, headCanReach } from './exposure/xray.js';
 
 // Setting up the shot so the film can be read.
 export { selectForJoint, basisThicknessIn } from './iqi/selection.js';
@@ -41,16 +42,23 @@ export {
   locationMarkerPlan,
 } from './film/identification.js';
 export { artifact, artifactsMimicking } from './film/artifact.js';
+export { developmentMinutes, judgeCycle, cycleRecord } from './film/processing.js';
+export { makeStock, makeCassette, load, smallestCovering } from './film/cassette.js';
 
 // Reading the film and judging the weld.
 export { indicationType, isPlanar, planarTypes } from './indication/types.js';
 export { makeIndication, cumulativeLengthIn, worstWindow } from './indication/measure.js';
 export { judge, judgeAll, codes, defaultCodeFor } from './accept/engine.js';
+export { maxDiscontinuityIn, requiredClearanceIn } from './accept/awsd1_1.js';
+export { clusters, scattered, reportable } from './indication/cluster.js';
+export { weldPositionOf, locateAll, spanOf } from './indication/locate.js';
 export { combine, isAcceptable, requiresRemoval } from './accept/verdict.js';
 
 // The paperwork that follows.
 export { makeJoint, weldLengthIn, describeJoint } from './joint/spec.js';
 export { pipeSpec, wallThicknessIn, outsideDiameterIn } from './joint/schedule.js';
+export { makeRegister, addJoint, addJoints, registerTotals } from './joint/register.js';
+export { makeProcedure, coversJoint, chooseProcedure } from './joint/wps.js';
 export { repairRate, welderRates, weldersOverThreshold } from './repair/rate.js';
 export { makeAttempt, addAttempt, chainState, canRepairAt } from './repair/tracking.js';
 export {
@@ -68,3 +76,15 @@ export { makeSurvey, judgeRetraction, judgeBoundary } from './safety/survey.js';
 export { judgeAnnual, annualLimitMrem } from './safety/dosimetry.js';
 export { makeSource, checkOut, leakTestCurrent } from './safety/sourcelog.js';
 export { makeCertification, mayInterpret, gradeExamination } from './personnel/cert.js';
+export { makePerson, checkCrew, signatory } from './personnel/roster.js';
+
+// Writing it down and running the job.
+export { makeJournal, append, appendAll, verify, replay } from './store/journal.js';
+export { byKind, timeline, currentDispositions, awaitingVerdict } from './store/query.js';
+export { planShot, recordShot, shoot, filmLabels } from './pipeline/shoot.js';
+export { gradeFilm, interpretJoint, interpret } from './pipeline/interpret.js';
+export { jointState, recordRepair, closeJoint, openJoints } from './pipeline/close.js';
+export { makeSheet, renderSheet, summarise } from './report/interpretation.js';
+export { buildTechnique, renderTechnique } from './report/technique.js';
+export { buildSummary, renderSummary, outstandingJoints } from './report/summary.js';
+export { toCsv, exportRegister, verifyChecksum } from './report/export.js';

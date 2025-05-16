@@ -15,17 +15,18 @@ const joint = makeJoint({ id: 'J-118', nominalSize: 6, schedule: 40 });
 
 describe('the registry', () => {
   it('carries the three codes', () => {
-    expect(codes()).toEqual(['API1104', 'ASME8', 'B31.3']);
+    expect(codes()).toEqual(['API1104', 'ASME8', 'B31.3', 'AWSD1.1']);
   });
 
   it('says what each code needs', () => {
     expect(describeCode('API1104').needs).toEqual(['wallIn', 'weldLengthIn']);
     expect(describeCode('ASME8').needs).toEqual(['thicknessIn']);
     expect(describeCode('B31.3').needs).toEqual(['thinnerWallIn', 'service']);
+    expect(describeCode('AWSD1.1').needs).toEqual(['thicknessIn', 'loading']);
   });
 
   it('refuses a code nobody wrote', () => {
-    expect(() => describeCode('AWS')).toThrow(/no acceptance code AWS/);
+    expect(() => describeCode('BS2910')).toThrow(/no acceptance code BS2910/);
   });
 });
 
@@ -90,7 +91,9 @@ describe('judge', () => {
   });
 
   it('refuses a code it does not carry', () => {
-    expect(() => judge({ code: 'AWS', indications: [], joint })).toThrow(/no acceptance code/);
+    expect(() => judge({ code: 'BS2910', indications: [], joint })).toThrow(
+      /no acceptance code/
+    );
   });
 
   it('refuses indications that are not an array', () => {
@@ -127,7 +130,7 @@ describe('the codes disagree, which is the point', () => {
 describe('judgeAll', () => {
   it('runs every code over the same joint', () => {
     const results = judgeAll({ indications: [], joint });
-    expect(results).toHaveLength(3);
+    expect(results).toHaveLength(codes().length);
     expect(results.every((r) => r.disposition === 'accept')).toBe(true);
   });
 
@@ -154,8 +157,48 @@ describe('defaultCodeFor', () => {
     expect(defaultCodeFor('vessel')).toBe('ASME8');
   });
 
+  it('sends structural work to AWS D1.1', () => {
+    expect(defaultCodeFor('structural')).toBe('AWSD1.1');
+  });
+
   it('sends everything else to B31.3', () => {
     expect(defaultCodeFor('process')).toBe('B31.3');
     expect(defaultCodeFor(undefined)).toBe('B31.3');
+  });
+});
+
+describe('AWS D1.1 through the engine', () => {
+  it('judges a clean joint', () => {
+    expect(judge({ code: 'AWSD1.1', indications: [], joint }).disposition).toBe('accept');
+  });
+
+  it('takes the weld thickness and a static loading by default', () => {
+    const context = contextFor('AWSD1.1', joint);
+    expect(context.thicknessIn).toBeCloseTo(0.28, 4);
+    expect(context.loading).toBe('static');
+  });
+
+  it('takes the loading from the caller', () => {
+    expect(contextFor('AWSD1.1', joint, { loading: 'cyclic' }).loading).toBe('cyclic');
+  });
+
+  it('gives the same joint different answers under the two loadings', () => {
+    const indications = [ind('SLAG', 0.11, { at: 1 })];
+    const statically = judge({ code: 'AWSD1.1', indications, joint });
+    const cyclically = judge({ code: 'AWSD1.1', indications, joint, loading: 'cyclic' });
+    expect(statically.disposition).toBe('accept');
+    expect(cyclically.disposition).toBe('repair');
+  });
+
+  it('is harsher than API 1104 on the same small slag line', () => {
+    const indications = [ind('SLAG', 0.5, { at: 1 })];
+    expect(judge({ code: 'API1104', indications, joint }).disposition).toBe('accept');
+    expect(judge({ code: 'AWSD1.1', indications, joint }).disposition).toBe('repair');
+  });
+
+  it('runs in judgeAll alongside the other three', () => {
+    const results = judgeAll({ indications: [], joint });
+    expect(results).toHaveLength(4);
+    expect(results.map((r) => r.code)).toContain('AWSD1.1');
   });
 });

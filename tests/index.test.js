@@ -28,6 +28,12 @@ describe('the public surface', () => {
       'makeJoint',
       'doseRateAt',
       'makeCertification',
+      'makeJournal',
+      'interpret',
+      'renderSheet',
+      'exportRegister',
+      'planXray',
+      'chooseProcedure',
     ]) {
       expect(kerfline[name], `${name} should be exported`).toBeTypeOf('function');
     }
@@ -74,5 +80,29 @@ describe('a joint goes through the surface end to end', () => {
   it('works the barricade out for the source that shot it', () => {
     const distance = kerfline.barricadeDistanceFt({ isotopeId: 'IR192', activityCi: 40 });
     expect(distance).toBeGreaterThan(200);
+  });
+});
+
+describe('the surface covers every stage of a job', () => {
+  it('reaches planning, shooting, reading, judging and reporting', () => {
+    const stages = {
+      planning: ['viewingPlan', 'planExposure', 'selectForJoint'],
+      shooting: ['planShot', 'recordShot', 'makeCassette'],
+      reading: ['gradeFilm', 'makeIndication', 'reportable'],
+      judging: ['judge', 'judgeAll', 'maxDiscontinuityIn'],
+      recording: ['makeJournal', 'append', 'verify'],
+      reporting: ['renderSheet', 'renderSummary', 'exportRegister'],
+    };
+    for (const [stage, names] of Object.entries(stages)) {
+      for (const name of names) {
+        expect(kerfline[name], `${stage} needs ${name}`).toBeTypeOf('function');
+      }
+    }
+  });
+
+  it('keeps the internals off the surface', () => {
+    for (const name of ['settle', 'capVerdict', 'rejectPlanar', 'stableStringify']) {
+      expect(kerfline[name], `${name} should stay internal`).toBeUndefined();
+    }
   });
 });

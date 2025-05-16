@@ -4,6 +4,7 @@ import { requireArray } from '../util/guard.js';
 import * as api1104 from './api1104.js';
 import * as asme8 from './asme8.js';
 import * as b313 from './asme31_3.js';
+import * as aws from './awsd1_1.js';
 
 /**
  * Dispatching a joint to the code that governs it.
@@ -47,6 +48,16 @@ const CODES = {
         service: context.service,
       }),
   },
+  'AWSD1.1': {
+    label: 'AWS D1.1, structural welds',
+    needs: ['thicknessIn', 'loading'],
+    judge: (indications, context) =>
+      aws.judgeJoint({
+        indications,
+        thicknessIn: context.thicknessIn,
+        loading: context.loading,
+      }),
+  },
 };
 
 export function codes() {
@@ -82,6 +93,15 @@ export function contextFor(name, joint, options = {}) {
       throw new BadInput('API 1104 needs the length of weld round the joint', { weldLengthIn });
     }
     return { wallIn, weldLengthIn };
+  }
+
+  if (name === 'AWSD1.1') {
+    // Structural work is judged on the weld itself and on whether the member
+    // flexes in service, which is not something the joint record knows.
+    return {
+      thicknessIn: round(wallIn, 4),
+      loading: options.loading ?? 'static',
+    };
   }
 
   if (name === 'ASME8') {
@@ -129,5 +149,6 @@ export function judgeAll({ indications, joint, ...options }) {
 export function defaultCodeFor(service) {
   if (service === 'pipeline') return 'API1104';
   if (service === 'vessel') return 'ASME8';
+  if (service === 'structural') return 'AWSD1.1';
   return 'B31.3';
 }

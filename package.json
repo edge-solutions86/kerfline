@@ -12,6 +12,9 @@
   "exports": {
     ".": "./src/index.js"
   },
+  "bin": {
+    "kerf": "bin/kerf.js"
+  },
   "files": [
     "src",
     "bin"

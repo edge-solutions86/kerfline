@@ -7,7 +7,7 @@ export default [
   },
   js.configs.recommended,
   {
-    files: ['**/*.js'],
+    files: ['**/*.js', '**/*.mjs'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
@@ -36,7 +36,7 @@ export default [
     },
   },
   {
-    files: ['bin/**/*.js', 'src/cli/**/*.js'],
+    files: ['bin/**/*.js', 'src/cli/**/*.js', 'scripts/**/*.mjs'],
     rules: {
       'no-console': 'off',
     },

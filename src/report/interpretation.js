@@ -2,7 +2,8 @@ import { BadInput } from '../errors.js';
 import { round, fixed } from '../util/num.js';
 import { requireArray } from '../util/guard.js';
 import { requireDay } from '../util/dates.js';
-import { renderTable, keyValueBlock, rule, padCenter } from '../util/text.js';
+import { renderTable, keyValueBlock } from '../util/text.js';
+import { heading, block, banner, page, pageWidth } from './layout.js';
 import { governingSizeIn } from '../indication/measure.js';
 
 /**
@@ -21,7 +22,7 @@ import { governingSizeIn } from '../indication/measure.js';
  */
 
 const REQUIRED = ['job', 'jointId', 'day', 'reader', 'code'];
-const WIDTH = 78;
+const WIDTH = pageWidth();
 
 export function requiredFields() {
   return [...REQUIRED];
@@ -78,9 +79,8 @@ export function indicationRows(sheet) {
 }
 
 function header(sheet) {
-  const lines = [
-    padCenter('RADIOGRAPHIC INTERPRETATION', WIDTH),
-    rule(WIDTH, '='),
+  return [
+    heading('RADIOGRAPHIC INTERPRETATION', WIDTH),
     keyValueBlock([
       ['Job', sheet.job ?? ''],
       ['Joint', sheet.jointId ?? ''],
@@ -90,14 +90,13 @@ function header(sheet) {
       ['Films', sheet.films.join(', ')],
       ['Read', sheet.day ?? ''],
     ]),
-  ];
-  return lines.join('\n');
+  ].join('\n');
 }
 
 function findings(sheet) {
   const rows = indicationRows(sheet);
   if (rows.length === 0) {
-    return ['FINDINGS', rule(WIDTH), 'No reportable indications.'].join('\n');
+    return block('FINDINGS', 'No reportable indications.', WIDTH);
   }
   const table = renderTable(rows, [
     { key: 'item', label: 'no', align: 'right' },
@@ -106,12 +105,12 @@ function findings(sheet) {
     { key: 'sizeIn', label: 'size in', align: 'right' },
     { key: 'film', label: 'film' },
   ]);
-  return ['FINDINGS', rule(WIDTH), table].join('\n');
+  return block('FINDINGS', table, WIDTH);
 }
 
 function disposition(sheet) {
   if (!sheet.verdict) {
-    return ['DISPOSITION', rule(WIDTH), 'Not yet judged.'].join('\n');
+    return block('DISPOSITION', 'Not yet judged.', WIDTH);
   }
   const reasons = sheet.verdict.reasons ?? [];
   const body = [
@@ -119,21 +118,20 @@ function disposition(sheet) {
     sheet.verdict.clause ? `Clause: ${sheet.verdict.clause}` : null,
     ...reasons.map((reason) => `  - ${reason}`),
   ].filter((line) => line !== null);
-  return ['DISPOSITION', rule(WIDTH), ...body].join('\n');
+  return block('DISPOSITION', body.join('\n'), WIDTH);
 }
 
 function signature(sheet) {
-  const who = sheet.reader
-    ? `${sheet.reader}${sheet.readerLevel ? ` (Level ${sheet.readerLevel})` : ''}`
-    : '';
-  return [
+  const level = sheet.readerLevel ? ` (Level ${sheet.readerLevel})` : '';
+  const who = sheet.reader ? `${sheet.reader}${level}` : '';
+  return block(
     'CERTIFIED BY',
-    rule(WIDTH),
     keyValueBlock([
       ['Reader', who],
       ['Date', sheet.day ?? ''],
     ]),
-  ].join('\n');
+    WIDTH
+  );
 }
 
 /** Render the sheet. Prints a draft banner when it is not issuable. */
@@ -141,10 +139,10 @@ export function renderSheet(sheet) {
   const state = completeness(sheet);
   const blocks = [header(sheet), findings(sheet), disposition(sheet), signature(sheet)];
   if (!state.issuable) {
-    blocks.unshift(padCenter(`DRAFT - missing ${state.missing.join(', ')}`, WIDTH));
+    blocks.unshift(banner(`DRAFT - missing ${state.missing.join(', ')}`, WIDTH));
   }
-  const body = blocks.join('\n\n');
-  return sheet.remarks ? `${body}\n\nREMARKS\n${rule(WIDTH)}\n${sheet.remarks}` : body;
+  if (sheet.remarks) blocks.push(block('REMARKS', sheet.remarks, WIDTH));
+  return page(blocks);
 }
 
 /** A one line summary for a register or an index of sheets. */

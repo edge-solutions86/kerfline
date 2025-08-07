@@ -2,10 +2,11 @@ import { BadInput } from '../errors.js';
 import { round } from '../util/num.js';
 import { requireArray } from '../util/guard.js';
 import { requireDay } from '../util/dates.js';
-import { keyValueBlock, renderTable, rule, padCenter } from '../util/text.js';
+import { keyValueBlock, renderTable, rule } from '../util/text.js';
 import { between } from '../store/query.js';
 import { compareIds } from '../util/ids.js';
 import { missingSurveys } from '../safety/survey.js';
+import { block, heading, page, pageWidth } from './layout.js';
 
 /**
  * The daily field report.
@@ -20,7 +21,7 @@ import { missingSurveys } from '../safety/survey.js';
  * that gap is cheap to close.
  */
 
-const WIDTH = 78;
+const WIDTH = pageWidth();
 
 export function buildDaily({ job, day, journal, crew = [], surveys = [], source = null }) {
   requireDay(day, 'report date');
@@ -79,8 +80,7 @@ export function renderDaily(report) {
   const totals = dailyTotals(report);
 
   const head = [
-    padCenter('DAILY FIELD REPORT', WIDTH),
-    rule(WIDTH, '='),
+    heading('DAILY FIELD REPORT', WIDTH),
     keyValueBlock([
       ['Job', report.job ?? ''],
       ['Date', report.day],
@@ -103,7 +103,7 @@ export function renderDaily(report) {
 
   const readings =
     report.verdicts.length === 0
-      ? ['READINGS', rule(WIDTH), 'Nothing read today.'].join('\n')
+      ? block('READINGS', 'Nothing read today.', WIDTH)
       : [
           'READINGS',
           rule(WIDTH),
@@ -123,7 +123,7 @@ export function renderDaily(report) {
         : `MISSING SURVEYS: ${report.surveysMissing.join(', ')}`,
   ].join('\n');
 
-  return [head, work, readings, safety].join('\n\n');
+  return page([head, work, readings, safety]);
 }
 
 /** Days in a span where a source went out and the surveys are short. */

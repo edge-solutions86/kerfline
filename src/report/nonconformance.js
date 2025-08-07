@@ -1,8 +1,9 @@
 import { BadInput, Conflict } from '../errors.js';
 import { requireArray, requireOneOf, requireWhole } from '../util/guard.js';
 import { requireDay, daysBetween, addWorkDays } from '../util/dates.js';
-import { renderTable, keyValueBlock, rule, padCenter } from '../util/text.js';
+import { renderTable, keyValueBlock } from '../util/text.js';
 import { sequence } from '../util/ids.js';
+import { heading, page, pageWidth } from './layout.js';
 
 /**
  * Nonconformance reports.
@@ -18,6 +19,8 @@ import { sequence } from '../util/ids.js';
  * due date is in working days, because a report raised on a Friday afternoon
  * is not late on Monday morning.
  */
+
+const WIDTH = pageWidth();
 
 const KINDS = ['procedure', 'documentation', 'equipment', 'calibration', 'personnel'];
 const SEVERITIES = ['observation', 'minor', 'major'];
@@ -159,8 +162,7 @@ export function renderNcrs(reports, { day, job = null } = {}) {
     due: ncr.dueBy,
   }));
   const blocks = [
-    padCenter('OPEN NONCONFORMANCES', 78),
-    rule(78, '='),
+    heading('OPEN NONCONFORMANCES', WIDTH),
     keyValueBlock([
       ['Job', job ?? ''],
       ['As at', day ?? ''],
@@ -177,5 +179,5 @@ export function renderNcrs(reports, { day, job = null } = {}) {
           { key: 'due', label: 'due' },
         ]),
   ];
-  return blocks.join('\n\n');
+  return page(blocks);
 }

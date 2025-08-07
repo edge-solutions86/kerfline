@@ -1,9 +1,10 @@
 import { BadInput } from '../errors.js';
 import { fixed } from '../util/num.js';
-import { renderTable, rule, padCenter } from '../util/text.js';
+import { renderTable, rule } from '../util/text.js';
 import { compareIds } from '../util/ids.js';
 import { joints as registerJoints } from '../joint/register.js';
 import { latestFor, currentDispositions } from '../store/query.js';
+import { heading, page, widePageWidth } from './layout.js';
 
 /**
  * The register report.
@@ -20,7 +21,7 @@ import { latestFor, currentDispositions } from '../store/query.js';
  * anybody who asks why.
  */
 
-const WIDTH = 96;
+const WIDTH = widePageWidth();
 
 export function buildRegisterReport({ register, journal }) {
   if (typeof register !== 'object' || register === null || !Array.isArray(register.joints)) {
@@ -83,10 +84,9 @@ export function registerColumns() {
 
 export function renderRegisterReport(report, { outstandingOnly = false } = {}) {
   const rows = outstandingOnly ? outstandingRows(report) : report.rows;
-  const heading = outstandingOnly ? 'OUTSTANDING JOINTS' : 'JOINT REGISTER';
+  const title = outstandingOnly ? 'OUTSTANDING JOINTS' : 'JOINT REGISTER';
   const blocks = [
-    padCenter(`${heading} - ${report.job}`, WIDTH),
-    rule(WIDTH, '='),
+    heading(`${title} - ${report.job}`, WIDTH),
     rows.length === 0 ? 'Nothing to report.' : renderTable(rows, COLUMNS),
   ];
   if (report.strays.length > 0) {
@@ -97,7 +97,7 @@ export function renderRegisterReport(report, { outstandingOnly = false } = {}) {
       `The journal mentions joints the register does not carry: ${report.strays.join(', ')}`
     );
   }
-  return blocks.join('\n');
+  return page(blocks);
 }
 
 /** The rows in the shape the CSV export wants. */

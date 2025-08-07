@@ -1,10 +1,11 @@
 import { BadInput } from '../errors.js';
 import { round } from '../util/num.js';
 import { requireArray } from '../util/guard.js';
-import { renderTable, keyValueBlock, rule, padCenter } from '../util/text.js';
+import { renderTable, keyValueBlock, rule } from '../util/text.js';
 import { compareIds } from '../util/ids.js';
 import { repairRate, welderRates } from '../repair/rate.js';
 import { coverageAchieved, weldersNotCovered } from '../sampling/coverage.js';
+import { block, heading, page, pageWidth } from './layout.js';
 
 /**
  * The job roll up.
@@ -21,7 +22,7 @@ import { coverageAchieved, weldersNotCovered } from '../sampling/coverage.js';
  * and does not show up in any rate.
  */
 
-const WIDTH = 78;
+const WIDTH = pageWidth();
 
 export function buildSummary({ job, joints, level = 'five' }) {
   requireArray(joints, 'joints');
@@ -77,8 +78,7 @@ export function renderSummary(summary) {
   const { counts, rate, coverage } = summary;
 
   const head = [
-    padCenter('RADIOGRAPHY SUMMARY', WIDTH),
-    rule(WIDTH, '='),
+    heading('RADIOGRAPHY SUMMARY', WIDTH),
     keyValueBlock([
       ['Job', summary.job],
       ['Called for', `${coverage.requiredFraction * 100} percent`],
@@ -115,7 +115,7 @@ export function renderSummary(summary) {
 
   const welders =
     summary.welders.length === 0
-      ? ['BY WELDER', rule(WIDTH), 'Nothing judged yet.'].join('\n')
+      ? block('BY WELDER', 'Nothing judged yet.', WIDTH)
       : [
           'BY WELDER',
           rule(WIDTH),
@@ -145,5 +145,5 @@ export function renderSummary(summary) {
       ].join('\n')
     );
   }
-  return blocks.join('\n\n');
+  return page(blocks);
 }

@@ -1,12 +1,13 @@
 import { BadInput } from '../errors.js';
 import { fixed, round } from '../util/num.js';
-import { renderTable, keyValueBlock, rule, padCenter } from '../util/text.js';
+import { renderTable, keyValueBlock } from '../util/text.js';
 import { viewingPlan } from '../geom/viewing.js';
 import { planExposure, timerSetting } from '../exposure/technique.js';
 import { selectForJoint } from '../iqi/selection.js';
 import { checkUnsharpness } from '../geom/unsharpness.js';
 import { shotPlan } from '../geom/coverage.js';
 import { barricadeDistanceFt } from '../safety/boundary.js';
+import { banner, block, heading, page, pageWidth } from './layout.js';
 
 /**
  * The technique sheet.
@@ -19,7 +20,7 @@ import { barricadeDistanceFt } from '../safety/boundary.js';
  * out blank, because a blank on a field sheet gets filled in by guesswork.
  */
 
-const WIDTH = 78;
+const WIDTH = pageWidth();
 
 export function buildTechnique(input) {
   if (typeof input !== 'object' || input === null) {
@@ -109,10 +110,6 @@ export function buildTechnique(input) {
   };
 }
 
-function block(title, body) {
-  return [title, rule(WIDTH), body].join('\n');
-}
-
 function missing(what) {
   return `not established (${what})`;
 }
@@ -121,8 +118,7 @@ export function renderTechnique(sheet) {
   const { joint, viewing, exposure, indicator, geometry, coverage } = sheet;
 
   const head = [
-    padCenter('RADIOGRAPHIC TECHNIQUE', WIDTH),
-    rule(WIDTH, '='),
+    heading('RADIOGRAPHIC TECHNIQUE', WIDTH),
     keyValueBlock([
       ['Job', sheet.job ?? ''],
       ['Joint', joint.id ?? ''],
@@ -184,10 +180,10 @@ export function renderTechnique(sheet) {
 
   const blocks = [head, source, quality, shots, safety];
   if (!sheet.usable) {
-    blocks.unshift(padCenter('NOT READY - see the notes at the foot', WIDTH));
+    blocks.unshift(banner('NOT READY - see the notes at the foot', WIDTH));
     blocks.push(block('NOTES', sheet.problems.map((line) => `  - ${line}`).join('\n')));
   }
-  return blocks.join('\n\n');
+  return page(blocks);
 }
 
 /** A one line summary for a job folder index. */

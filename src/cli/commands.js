@@ -2,6 +2,7 @@ import { BadInput, NotFound } from '../errors.js';
 import { fixed } from '../util/num.js';
 import { renderTable, keyValueBlock, rule } from '../util/text.js';
 import { defineOption, parseArgs, usage } from './args.js';
+import { tablesCommand } from './tables.js';
 import { makeJoint } from '../joint/spec.js';
 import { makeIndication } from '../indication/measure.js';
 import { buildTechnique, renderTechnique } from '../report/technique.js';
@@ -197,6 +198,8 @@ const COMMANDS = {
       return { text: table, code: 0 };
     },
   },
+
+  tables: tablesCommand,
 };
 
 export function commandNames() {

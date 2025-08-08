@@ -40,8 +40,8 @@ describe('parseIndication', () => {
 });
 
 describe('the command list', () => {
-  it('offers the three commands', () => {
-    expect(commandNames()).toEqual(['technique', 'judge', 'sources']);
+  it('offers the four commands', () => {
+    expect(commandNames()).toEqual(['technique', 'judge', 'sources', 'tables']);
   });
 
   it('describes each one', () => {

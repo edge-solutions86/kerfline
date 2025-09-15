@@ -1,5 +1,5 @@
 import { BadInput, Conflict, NotFound } from '../errors.js';
-import { requireArray } from '../util/guard.js';
+import { requireArray, requireLabel } from '../util/guard.js';
 import { requireDay, daysBetween } from '../util/dates.js';
 import { chain, stableStringify, digestOf } from '../util/checksum.js';
 
@@ -35,9 +35,7 @@ export function entryKinds() {
 }
 
 export function makeJournal(name) {
-  if (typeof name !== 'string' || name.trim() === '') {
-    throw new BadInput('a journal is named after the job it belongs to', { got: name });
-  }
+  requireLabel(name, 'a journal is named after the job it belongs to');
   return Object.freeze({ name: name.trim(), entries: Object.freeze([]) });
 }
 
@@ -54,9 +52,7 @@ export function append(journal, { kind, day, subject, payload = {} }) {
     });
   }
   requireDay(day, 'entry date');
-  if (typeof subject !== 'string' || subject.trim() === '') {
-    throw new BadInput('every entry names what it is about', { got: subject });
-  }
+  requireLabel(subject, 'every entry names what it is about');
 
   const previous = journal.entries[journal.entries.length - 1] ?? null;
   if (previous && daysBetween(previous.day, day) < 0) {

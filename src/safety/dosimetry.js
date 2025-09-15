@@ -1,6 +1,6 @@
 import { BadInput } from '../errors.js';
 import { round, sum } from '../util/num.js';
-import { requireArray, requireAtLeast } from '../util/guard.js';
+import { requireArray, requireAtLeast, requireLabel } from '../util/guard.js';
 import { requireDay, withinSpan, addYears } from '../util/dates.js';
 
 /**
@@ -35,9 +35,7 @@ export function investigationLevels() {
 }
 
 export function makeBadgeRecord({ person, from, to, mrem, returned = true }) {
-  if (typeof person !== 'string' || person.trim() === '') {
-    throw new BadInput('a dose record names the person it belongs to', { got: person });
-  }
+  requireLabel(person, 'a dose record names the person it belongs to');
   requireDay(from, 'period start');
   requireDay(to, 'period end');
   if (to < from) {

@@ -1,5 +1,5 @@
 import { BadInput } from '../errors.js';
-import { requireArray } from '../util/guard.js';
+import { requireArray, requireLabel } from '../util/guard.js';
 import { rule, padCenter } from '../util/text.js';
 
 /**
@@ -37,18 +37,14 @@ function checkWidth(width) {
 /** The title at the head of a report, centred over a double rule. */
 export function heading(title, width = DEFAULT_WIDTH) {
   checkWidth(width);
-  if (typeof title !== 'string' || title.trim() === '') {
-    throw new BadInput('a report has a title', { got: title });
-  }
+  requireLabel(title, 'a report has a title');
   return [padCenter(title, width), rule(width, '=')].join('\n');
 }
 
 /** A section: its title, a single rule, then whatever it holds. */
 export function block(title, body, width = DEFAULT_WIDTH) {
   checkWidth(width);
-  if (typeof title !== 'string' || title.trim() === '') {
-    throw new BadInput('a section has a title', { got: title });
-  }
+  requireLabel(title, 'a section has a title');
   return [title, rule(width), body === '' || body === null ? '' : body]
     .filter((part) => part !== '')
     .join('\n');

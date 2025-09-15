@@ -1,6 +1,6 @@
 import { BadInput } from '../errors.js';
 import { round } from '../util/num.js';
-import { requireArray } from '../util/guard.js';
+import { requireArray, requireLabel } from '../util/guard.js';
 import { requireDay } from '../util/dates.js';
 import { append } from '../store/journal.js';
 import { byKind } from '../store/query.js';
@@ -115,9 +115,7 @@ export function planReshoot({ grade, minutes, filmId = 'D7', wantedDensity = 2.5
 /** Write the reshoot into the journal against the joint it belongs to. */
 export function recordReshoot(journal, { jointId, day, plan, film = null }) {
   requireDay(day, 'reshoot date');
-  if (typeof jointId !== 'string' || jointId.trim() === '') {
-    throw new BadInput('a reshoot names the joint it is on', { got: jointId });
-  }
+  requireLabel(jointId, 'a reshoot names the joint it is on');
   return append(journal, {
     kind: 'shot',
     day,

@@ -1,5 +1,5 @@
 import { BadInput } from '../errors.js';
-import { requireArray, requireAtLeast, requireOneOf } from '../util/guard.js';
+import { requireArray, requireAtLeast, requireLabel, requireOneOf } from '../util/guard.js';
 import { requireDay } from '../util/dates.js';
 import { codes, judge } from '../accept/engine.js';
 import { levels as coverageLevels, levelFraction } from '../sampling/coverage.js';
@@ -37,12 +37,8 @@ export function makeJob(input) {
     calledForSensitivity = 2,
   } = input;
 
-  if (typeof number !== 'string' || number.trim() === '') {
-    throw new BadInput('a job is identified by its number', { got: number });
-  }
-  if (typeof client !== 'string' || client.trim() === '') {
-    throw new BadInput('a job names the client it is for', { got: client });
-  }
+  requireLabel(number, 'a job is identified by its number');
+  requireLabel(client, 'a job names the client it is for');
   requireOneOf(code, codes(), 'acceptance code');
   requireOneOf(coverage, coverageLevels(), 'radiography level');
   if (code === 'B31.3') requireOneOf(service, services(), 'fluid service');

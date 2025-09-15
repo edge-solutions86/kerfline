@@ -1,6 +1,5 @@
-import { BadInput } from '../errors.js';
 import { round } from '../util/num.js';
-import { requireArray } from '../util/guard.js';
+import { requireArray, requireLabel } from '../util/guard.js';
 import { renderTable, keyValueBlock, rule } from '../util/text.js';
 import { compareIds } from '../util/ids.js';
 import { repairRate, welderRates } from '../repair/rate.js';
@@ -26,9 +25,7 @@ const WIDTH = pageWidth();
 
 export function buildSummary({ job, joints, level = 'five' }) {
   requireArray(joints, 'joints');
-  if (typeof job !== 'string' || job.trim() === '') {
-    throw new BadInput('a summary names the job it covers', { got: job });
-  }
+  requireLabel(job, 'a summary names the job it covers');
 
   const shot = joints.filter((joint) => joint.shot);
   const judged = shot.filter((joint) => joint.disposition);

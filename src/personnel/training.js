@@ -1,6 +1,5 @@
-import { BadInput } from '../errors.js';
 import { round, sum } from '../util/num.js';
-import { requireArray, requireAtLeast, requireOneOf } from '../util/guard.js';
+import { requireArray, requireAtLeast, requireLabel, requireOneOf } from '../util/guard.js';
 import { requireDay, addYears, daysBetween, withinSpan } from '../util/dates.js';
 import { requirementsFor, levels } from './cert.js';
 
@@ -30,12 +29,8 @@ export function refreshYearsFor(method) {
 }
 
 export function makeTraining({ person, method, course, hours, day, provider = null }) {
-  if (typeof person !== 'string' || person.trim() === '') {
-    throw new BadInput('a training record names who attended', { got: person });
-  }
-  if (typeof course !== 'string' || course.trim() === '') {
-    throw new BadInput('a training record names the course', { got: course });
-  }
+  requireLabel(person, 'a training record names who attended');
+  requireLabel(course, 'a training record names the course');
   requireOneOf(method, METHODS, 'method');
   requireDay(day, 'training date');
   requireAtLeast(hours, 0, 'hours');

@@ -1,6 +1,6 @@
 import { BadInput, NotFound } from '../errors.js';
 import { round, mean } from '../util/num.js';
-import { requireArray, requireAtLeast } from '../util/guard.js';
+import { requireArray, requireAtLeast, requireLabel } from '../util/guard.js';
 import { requireDay, addYears, addMonths, daysBetween } from '../util/dates.js';
 
 /**
@@ -103,9 +103,7 @@ export function makeCertification({
   experienceHours,
   visionOn,
 }) {
-  if (typeof person !== 'string' || person.trim() === '') {
-    throw new BadInput('a certification names the person it belongs to', { got: person });
-  }
+  requireLabel(person, 'a certification names the person it belongs to');
   requirementsFor(level);
   requireDay(certifiedOn, 'certification date');
   requireDay(visionOn, 'vision test date');

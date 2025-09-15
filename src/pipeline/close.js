@@ -3,6 +3,7 @@ import { requireDay } from '../util/dates.js';
 import { append } from '../store/journal.js';
 import { timeline, latestFor } from '../store/query.js';
 import { makeAttempt, addAttempt, chainState, canRepairAt } from '../repair/tracking.js';
+import { requireLabel } from '../util/guard.js';
 
 /**
  * Closing a joint out.
@@ -57,9 +58,7 @@ export function jointState(journal, jointId) {
  */
 export function recordRepair(journal, { jointId, day, at, welder = null, note = null }) {
   requireDay(day, 'repair date');
-  if (typeof jointId !== 'string' || jointId.trim() === '') {
-    throw new BadInput('a repair names the joint it is on', { got: jointId });
-  }
+  requireLabel(jointId, 'a repair names the joint it is on');
   const attempts = attemptsFor(journal, jointId);
   if (at !== null && at !== undefined) {
     const check = canRepairAt(attempts, at);

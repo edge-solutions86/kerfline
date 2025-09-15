@@ -1,5 +1,5 @@
 import { BadInput, Conflict } from '../errors.js';
-import { requireArray, requireWhole } from '../util/guard.js';
+import { requireArray, requireLabel, requireWhole } from '../util/guard.js';
 import { requireDay, daysBetween } from '../util/dates.js';
 import { clockSpanDegrees } from '../geom/pipe.js';
 
@@ -30,9 +30,7 @@ export function maximumRepairs() {
 
 /** One attempt on a joint: the original shot or a repair of it. */
 export function makeAttempt({ label, day, disposition, at = null, note = null }) {
-  if (typeof label !== 'string' || label.trim() === '') {
-    throw new BadInput('every attempt carries a label', { got: label });
-  }
+  requireLabel(label, 'every attempt carries a label');
   requireDay(day, 'attempt date');
   if (!['accept', 'repair', 'reject'].includes(disposition)) {
     throw new BadInput('an attempt ends in accept, repair or reject', { got: disposition });

@@ -1,6 +1,6 @@
 import { BadInput, Conflict } from '../errors.js';
 import { round, mean, maxOf, minOf } from '../util/num.js';
-import { requireArray, requireAtLeast } from '../util/guard.js';
+import { requireArray, requireAtLeast, requireLabel } from '../util/guard.js';
 import { requireDay } from '../util/dates.js';
 import { calibrationCurrent } from './stepwedge.js';
 import { judgeDensity } from './limits.js';
@@ -31,12 +31,8 @@ export function makeReadingSet({
   sourceKind = 'gamma',
 }) {
   requireDay(day, 'reading date');
-  if (typeof film !== 'string' || film.trim() === '') {
-    throw new BadInput('a reading set names the film it came off', { got: film });
-  }
-  if (typeof instrument !== 'string' || instrument.trim() === '') {
-    throw new BadInput('a reading set names the instrument', { got: instrument });
-  }
+  requireLabel(film, 'a reading set names the film it came off');
+  requireLabel(instrument, 'a reading set names the instrument');
   requireArray(area, 'area readings');
   requireAtLeast(indicatorDensity, 0, 'indicator density');
 

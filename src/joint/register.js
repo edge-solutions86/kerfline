@@ -1,6 +1,6 @@
 import { BadInput, Conflict, NotFound } from '../errors.js';
 import { round, sum } from '../util/num.js';
-import { requireArray } from '../util/guard.js';
+import { requireArray, requireLabel } from '../util/guard.js';
 import { compareIds, sortIds } from '../util/ids.js';
 import { makeJoint, weldLengthIn } from './spec.js';
 
@@ -18,9 +18,7 @@ import { makeJoint, weldLengthIn } from './spec.js';
  */
 
 export function makeRegister(job) {
-  if (typeof job !== 'string' || job.trim() === '') {
-    throw new BadInput('a register belongs to a job', { got: job });
-  }
+  requireLabel(job, 'a register belongs to a job');
   return Object.freeze({ job: job.trim(), joints: Object.freeze([]) });
 }
 

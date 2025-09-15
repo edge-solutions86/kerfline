@@ -1,5 +1,5 @@
 import { BadInput, Conflict } from '../errors.js';
-import { requireArray, requireOneOf, requireWhole } from '../util/guard.js';
+import { requireArray, requireLabel, requireOneOf, requireWhole } from '../util/guard.js';
 import { requireDay, daysBetween, addWorkDays } from '../util/dates.js';
 import { renderTable, keyValueBlock } from '../util/text.js';
 import { sequence } from '../util/ids.js';
@@ -52,12 +52,8 @@ export function raiseNcr({
   requireOneOf(kind, KINDS, 'nonconformance kind');
   requireOneOf(severity, SEVERITIES, 'severity');
   requireDay(raisedOn, 'raised date');
-  if (typeof detail !== 'string' || detail.trim() === '') {
-    throw new BadInput('a nonconformance says what was wrong', { got: detail });
-  }
-  if (typeof raisedBy !== 'string' || raisedBy.trim() === '') {
-    throw new BadInput('a nonconformance names who raised it', { got: raisedBy });
-  }
+  requireLabel(detail, 'a nonconformance says what was wrong');
+  requireLabel(raisedBy, 'a nonconformance names who raised it');
   if (!Number.isInteger(number) || number < 1) {
     throw new BadInput('a nonconformance is numbered from one', { got: number });
   }
@@ -89,9 +85,7 @@ export function closeNcr(ncr, { day, by, action }) {
       day,
     });
   }
-  if (typeof action !== 'string' || action.trim() === '') {
-    throw new BadInput('closing a nonconformance says what was done about it', { got: action });
-  }
+  requireLabel(action, 'closing a nonconformance says what was done about it');
   return { ...ncr, closedOn: day, closedBy: by ?? null, action: action.trim() };
 }
 

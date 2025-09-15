@@ -1,5 +1,5 @@
 import { BadInput } from '../errors.js';
-import { requireArray } from '../util/guard.js';
+import { requireArray, requireLabel } from '../util/guard.js';
 import { requireDay } from '../util/dates.js';
 import { mayInterpret, requirementsFor } from './cert.js';
 
@@ -29,9 +29,7 @@ export function minimumCrew() {
 }
 
 export function makePerson({ name, role, certification = null, monitored = false }) {
-  if (typeof name !== 'string' || name.trim() === '') {
-    throw new BadInput('a crew member has a name', { got: name });
-  }
+  requireLabel(name, 'a crew member has a name');
   if (!ROLES.includes(role)) {
     throw new BadInput(`a role is one of ${ROLES.join(', ')}`, { got: role, known: ROLES });
   }

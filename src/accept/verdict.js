@@ -1,5 +1,5 @@
 import { BadInput } from '../errors.js';
-import { requireArray, requireOneOf } from '../util/guard.js';
+import { requireArray, requireLabel, requireOneOf } from '../util/guard.js';
 
 /**
  * What a code paragraph hands back.
@@ -36,12 +36,8 @@ export function makeVerdict({
   measured = null,
 }) {
   requireOneOf(disposition, DISPOSITIONS, 'disposition');
-  if (typeof code !== 'string' || code.trim() === '') {
-    throw new BadInput('a verdict names the code it came from', { got: code });
-  }
-  if (typeof clause !== 'string' || clause.trim() === '') {
-    throw new BadInput('a verdict names the clause it came from', { got: clause });
-  }
+  requireLabel(code, 'a verdict names the code it came from');
+  requireLabel(clause, 'a verdict names the clause it came from');
   if (disposition !== 'accept' && (typeof reason !== 'string' || reason.trim() === '')) {
     throw new BadInput('a verdict that is not an acceptance carries a reason', { got: reason });
   }

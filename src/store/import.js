@@ -1,5 +1,5 @@
 import { BadInput, Conflict } from '../errors.js';
-import { requireArray } from '../util/guard.js';
+import { requireArray, requireLabel } from '../util/guard.js';
 import { isDay } from '../util/dates.js';
 import { chain, stableStringify } from '../util/checksum.js';
 import { entryKinds } from './journal.js';
@@ -73,9 +73,7 @@ export function parseJournal(text, name) {
   if (typeof text !== 'string') {
     throw new BadInput('a journal file is text', { got: text });
   }
-  if (typeof name !== 'string' || name.trim() === '') {
-    throw new BadInput('an imported journal needs a job name', { got: name });
-  }
+  requireLabel(name, 'an imported journal needs a job name');
   const lines = text.split('\n').filter((line) => line.trim() !== '');
   const entries = lines.map((line, index) => parseLine(line, index + 1));
 

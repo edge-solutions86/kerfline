@@ -1,6 +1,6 @@
 import { BadInput } from '../errors.js';
 import { isFiniteNumber, round } from '../util/num.js';
-import { requireOneOf } from '../util/guard.js';
+import { requireLabel, requireOneOf } from '../util/guard.js';
 import { requireStencil } from '../util/ids.js';
 import { requireDay } from '../util/dates.js';
 import { pipeSpec, outsideDiameterIn } from './schedule.js';
@@ -55,9 +55,7 @@ export function makeJoint(input) {
     type = 'butt',
   } = input;
 
-  if (typeof id !== 'string' || id.trim() === '') {
-    throw new BadInput('every joint needs an id', { got: id });
-  }
+  requireLabel(id, 'every joint needs an id');
   requireOneOf(position, POSITIONS, 'weld position');
   requireOneOf(process, PROCESSES, 'welding process');
   requireOneOf(type, TYPES, 'joint type');

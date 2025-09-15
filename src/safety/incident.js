@@ -1,5 +1,5 @@
 import { BadInput } from '../errors.js';
-import { requireArray, requireAtLeast, requireOneOf } from '../util/guard.js';
+import { requireArray, requireAtLeast, requireLabel, requireOneOf } from '../util/guard.js';
 import { requireDay, addDays, daysBetween } from '../util/dates.js';
 import { annualLimitMrem } from './dosimetry.js';
 
@@ -88,12 +88,8 @@ export function makeIncident({
   source = null,
 }) {
   requireDay(day, 'incident date');
-  if (typeof reference !== 'string' || reference.trim() === '') {
-    throw new BadInput('an incident carries a reference', { got: reference });
-  }
-  if (typeof detail !== 'string' || detail.trim() === '') {
-    throw new BadInput('an incident says what happened', { got: detail });
-  }
+  requireLabel(reference, 'an incident carries a reference');
+  requireLabel(detail, 'an incident says what happened');
   const clock = classify({ kind, doseMrem });
   return {
     reference: reference.trim(),

@@ -61,6 +61,19 @@ export function requireOneOf(value, options, what) {
   return value;
 }
 
+/**
+ * A non empty piece of text: a name, a job reference, a serial number. The
+ * message is passed in rather than built from a field name, because these
+ * read as sentences at the call site and each says something a little
+ * different about what is missing.
+ */
+export function requireLabel(value, message) {
+  if (typeof value !== 'string' || value.trim() === '') {
+    throw new BadInput(message, { got: value });
+  }
+  return value.trim();
+}
+
 export function requireArray(value, what) {
   if (!Array.isArray(value)) {
     throw new BadInput(`${what} must be an array`, { got: value });

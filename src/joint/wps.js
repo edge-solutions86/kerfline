@@ -1,6 +1,6 @@
 import { BadInput, NotFound } from '../errors.js';
 import { round } from '../util/num.js';
-import { requireArray, requireAbove, requireOneOf } from '../util/guard.js';
+import { requireAbove, requireArray, requireLabel, requireOneOf } from '../util/guard.js';
 
 /**
  * Welding procedures and the range each one qualifies.
@@ -68,9 +68,7 @@ export function makeProcedure({
   testPosition,
   materialGroup = 'P1',
 }) {
-  if (typeof id !== 'string' || id.trim() === '') {
-    throw new BadInput('a procedure is identified by its number', { got: id });
-  }
+  requireLabel(id, 'a procedure is identified by its number');
   requireOneOf(testPosition, POSITIONS, 'test position');
   const thickness = thicknessRange(couponThicknessIn);
   const diameter = diameterRange(couponOdIn);

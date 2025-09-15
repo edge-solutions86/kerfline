@@ -1,6 +1,6 @@
 import { BadInput } from '../errors.js';
 import { round, maxOf } from '../util/num.js';
-import { requireArray, requireAbove, requireAtLeast } from '../util/guard.js';
+import { requireAbove, requireArray, requireAtLeast, requireLabel } from '../util/guard.js';
 import { requireDay } from '../util/dates.js';
 import { restrictedAreaRate, highRadiationRate } from './boundary.js';
 
@@ -37,9 +37,7 @@ export function makeSurvey({ kind, day, instrument, readings, surveyor = null })
     throw new BadInput(`a survey is one of ${KINDS.join(', ')}`, { got: kind, known: KINDS });
   }
   requireDay(day, 'survey date');
-  if (typeof instrument !== 'string' || instrument.trim() === '') {
-    throw new BadInput('a survey names the meter it was taken with', { got: instrument });
-  }
+  requireLabel(instrument, 'a survey names the meter it was taken with');
   requireArray(readings, 'readings');
   if (readings.length === 0) {
     throw new BadInput('a survey with no readings is not a survey', { kind });

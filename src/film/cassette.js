@@ -1,6 +1,6 @@
-import { BadInput, NotFound, Conflict } from '../errors.js';
+import { NotFound, Conflict } from '../errors.js';
 import { round } from '../util/num.js';
-import { requireArray, requireAtLeast, requireWhole } from '../util/guard.js';
+import { requireArray, requireAtLeast, requireLabel, requireWhole } from '../util/guard.js';
 import { requireDay, daysBetween, addMonths } from '../util/dates.js';
 import { screen } from '../exposure/screens.js';
 
@@ -59,9 +59,7 @@ export function smallestCovering(lengthIn, { widthIn = 0 } = {}) {
 }
 
 export function makeStock({ batch, size, boxedOn, sheets, filmId = 'D7' }) {
-  if (typeof batch !== 'string' || batch.trim() === '') {
-    throw new BadInput('film stock carries its batch number', { got: batch });
-  }
+  requireLabel(batch, 'film stock carries its batch number');
   const dimensions = sizeOf(size);
   requireDay(boxedOn, 'boxing date');
   requireWhole(sheets, 'sheet count');
@@ -97,9 +95,7 @@ export function stockToUseUp(stocks, { day, withinDays = 60 }) {
 }
 
 export function makeCassette({ id, size, screens = 'LEAD_STANDARD' }) {
-  if (typeof id !== 'string' || id.trim() === '') {
-    throw new BadInput('a cassette is identified by its number', { got: id });
-  }
+  requireLabel(id, 'a cassette is identified by its number');
   const dimensions = sizeOf(size);
   const set = screen(screens);
   return {

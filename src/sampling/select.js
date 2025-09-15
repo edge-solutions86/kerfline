@@ -1,5 +1,5 @@
 import { BadInput } from '../errors.js';
-import { requireArray, requireWhole, requireAtLeast } from '../util/guard.js';
+import { requireArray, requireAtLeast, requireLabel, requireWhole } from '../util/guard.js';
 
 /**
  * Choosing which joints to shoot, and what happens when one fails.
@@ -31,9 +31,7 @@ export function generator(seed) {
 
 /** Turn a job number into a seed, so the same job always selects the same. */
 export function seedFrom(text) {
-  if (typeof text !== 'string' || text.trim() === '') {
-    throw new BadInput('a seed is derived from a non empty string', { got: text });
-  }
+  requireLabel(text, 'a seed is derived from a non empty string');
   let hash = 2166136261;
   for (const char of text.trim()) {
     hash ^= char.codePointAt(0);

@@ -1,6 +1,6 @@
-import { BadInput, Conflict } from '../errors.js';
+import { Conflict } from '../errors.js';
 import { round, sum } from '../util/num.js';
-import { requireArray, requireAtLeast, requireAbove } from '../util/guard.js';
+import { requireAbove, requireArray, requireAtLeast, requireLabel } from '../util/guard.js';
 import { requireDay, addMonths, daysBetween, withinSpan } from '../util/dates.js';
 import { isotope } from '../isotope/catalog.js';
 import { activityAfter } from '../isotope/decay.js';
@@ -31,9 +31,7 @@ export function leakIntervalMonths() {
 }
 
 export function makeSource({ serial, isotopeId, assayCi, assayDay, camera = null }) {
-  if (typeof serial !== 'string' || serial.trim() === '') {
-    throw new BadInput('a source is identified by its serial number', { got: serial });
-  }
+  requireLabel(serial, 'a source is identified by its serial number');
   const source = isotope(isotopeId);
   requireAbove(assayCi, 0, 'assay activity');
   requireDay(assayDay, 'assay date');
@@ -57,9 +55,7 @@ export function activityOn(source, day) {
 /** One entry in the utilisation log. */
 export function makeUse({ serial, day, user, location, minutes, exposures }) {
   requireDay(day, 'date');
-  if (typeof user !== 'string' || user.trim() === '') {
-    throw new BadInput('every use of a source names who had it', { got: user });
-  }
+  requireLabel(user, 'every use of a source names who had it');
   requireAtLeast(minutes, 0, 'time out of shield');
   requireAtLeast(exposures, 0, 'exposure count');
   return {

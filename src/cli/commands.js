@@ -82,6 +82,7 @@ const TECHNIQUE_OPTIONS = [
   defineOption({ name: 'film', fallback: 'D7' }),
   defineOption({ name: 'screens', fallback: 'LEAD_STANDARD' }),
   defineOption({ name: 'density', kind: 'number', fallback: 2 }),
+  defineOption({ name: 'material', fallback: 'CARBON_STEEL', describe: 'what the pipe is' }),
 ];
 
 const JUDGE_OPTIONS = [
@@ -119,6 +120,7 @@ const COMMANDS = {
         filmId: options.film,
         screens: options.screens,
         targetDensity: options.density,
+        materialId: options.material,
       });
       return { text: renderTechnique(sheet), code: sheet.usable ? 0 : 1 };
     },

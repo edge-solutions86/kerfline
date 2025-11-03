@@ -7,6 +7,7 @@ import { selectForJoint } from '../iqi/selection.js';
 import { checkUnsharpness } from '../geom/unsharpness.js';
 import { shotPlan } from '../geom/coverage.js';
 import { barricadeDistanceFt } from '../safety/boundary.js';
+import { equivalentSteelIn, material } from '../joint/material.js';
 import { banner, block, heading, page, pageWidth } from './layout.js';
 
 /**
@@ -18,6 +19,14 @@ import { banner, block, heading, page, pageWidth } from './layout.js';
  * say today. When a chart cannot cover a wall or the geometry will not close,
  * the sheet says so in the place the number would have gone instead of coming
  * out blank, because a blank on a field sheet gets filled in by guesswork.
+ *
+ * The one thing worth being careful about is that two different
+ * thicknesses come out of the same joint. The exposure chart is a steel
+ * chart, so it is read at the thickness of steel that absorbs the same
+ * amount as this section does. The indicator is chosen on the section
+ * itself, because the indicator is made of the same metal and is standing
+ * in for it. On steel the two are equal and nothing shows; on aluminium
+ * they differ by a factor of five.
  */
 
 const WIDTH = pageWidth();
@@ -40,6 +49,7 @@ export function buildTechnique(input) {
     targetDensity = 2,
     maxThicknessRatio = 1.2,
     sourceCanEnter = false,
+    materialId = 'CARBON_STEEL',
   } = input;
 
   if (typeof joint !== 'object' || joint === null) {
@@ -62,10 +72,15 @@ export function buildTechnique(input) {
     }
   };
 
+  // The chart is a steel chart, so it is read at the equivalent steel.
+  const chartThicknessIn = attempt('material', () =>
+    equivalentSteelIn(materialId, viewing.penetratedThicknessIn)
+  );
+
   const exposure = attempt('exposure', () =>
     planExposure({
       isotopeId,
-      thicknessIn: viewing.penetratedThicknessIn,
+      thicknessIn: chartThicknessIn ?? viewing.penetratedThicknessIn,
       distanceIn: sourceToObjectIn + objectToFilmIn,
       filmId,
       screens,
@@ -99,6 +114,8 @@ export function buildTechnique(input) {
   return {
     job: job ?? null,
     joint,
+    materialId,
+    chartThicknessIn,
     viewing,
     exposure,
     indicator,
@@ -108,6 +125,20 @@ export function buildTechnique(input) {
     problems,
     usable: problems.length === 0,
   };
+}
+
+/**
+ * The material as a name, or as whatever was asked for when that is not a
+ * material this shop knows. A sheet that names an unknown metal has already
+ * recorded that as a problem, and refusing to print it as well would mean the
+ * only way to see the mistake is to be unable to look at the sheet.
+ */
+function materialLabel(materialId) {
+  try {
+    return material(materialId).label;
+  } catch {
+    return `${materialId} (not on the material list)`;
+  }
 }
 
 function missing(what) {
@@ -125,6 +156,11 @@ export function renderTechnique(sheet) {
       ['Pipe', `${fixed(joint.odIn, 3)} in OD x ${fixed(joint.wallIn, 3)} wall`],
       ['Viewing', viewing.label],
       ['Penetrated', `${fixed(viewing.penetratedThicknessIn, 3)} in`],
+      ['Material', materialLabel(sheet.materialId)],
+      [
+        'Chart read at',
+        sheet.chartThicknessIn === null ? '' : `${fixed(sheet.chartThicknessIn, 3)} in steel`,
+      ],
     ]),
   ].join('\n');
 
@@ -190,6 +226,7 @@ export function renderTechnique(sheet) {
 export function summariseTechnique(sheet) {
   return {
     jointId: sheet.joint.id ?? null,
+    material: sheet.materialId,
     technique: sheet.viewing.technique,
     isotope: sheet.exposure ? sheet.exposure.isotope : null,
     minutes: sheet.exposure ? round(sheet.exposure.minutes, 2) : null,

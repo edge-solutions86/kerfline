@@ -172,3 +172,48 @@ describe('summariseTechnique', () => {
     expect(summary.usable).toBe(false);
   });
 });
+
+describe('the material the pipe is made of', () => {
+  it('reads the chart at the equivalent steel thickness', () => {
+    const steel = buildTechnique(base);
+    expect(steel.chartThicknessIn).toBeCloseTo(steel.viewing.penetratedThicknessIn, 4);
+  });
+
+  it('reads a lighter metal at a much thinner steel equivalent', () => {
+    const aluminium = buildTechnique({ ...base, materialId: 'ALUMINIUM' });
+    expect(aluminium.chartThicknessIn).toBeLessThan(
+      aluminium.viewing.penetratedThicknessIn / 4
+    );
+  });
+
+  it('shortens the exposure on the lighter metal', () => {
+    const steel = buildTechnique(base);
+    const aluminium = buildTechnique({ ...base, materialId: 'ALUMINIUM' });
+    expect(aluminium.exposure).toBe(null);
+    expect(steel.exposure).not.toBe(null);
+  });
+
+  it('lengthens it on a harder one', () => {
+    const steel = buildTechnique(base);
+    const inconel = buildTechnique({ ...base, materialId: 'INCONEL' });
+    expect(inconel.exposure.curieMinutes).toBeGreaterThan(steel.exposure.curieMinutes);
+  });
+
+  it('still chooses the indicator on the section and not on the steel equivalent', () => {
+    const steel = buildTechnique(base);
+    const inconel = buildTechnique({ ...base, materialId: 'INCONEL' });
+    expect(inconel.indicator.holeIdentity).toBe(steel.indicator.holeIdentity);
+  });
+
+  it('prints the material and the chart thickness on the sheet', () => {
+    const text = renderTechnique(buildTechnique({ ...base, materialId: 'STAINLESS' }));
+    expect(text).toContain('austenitic stainless');
+    expect(text).toContain('in steel');
+  });
+
+  it('records a material it does not know rather than throwing', () => {
+    const sheet = buildTechnique({ ...base, materialId: 'LEAD' });
+    expect(sheet.usable).toBe(false);
+    expect(sheet.problems.join(' ')).toMatch(/material/);
+  });
+});

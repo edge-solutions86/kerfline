@@ -224,3 +224,40 @@ describe('the usage screens', () => {
     expect(() => commandUsage('shoot')).toThrow(/no command shoot/);
   });
 });
+
+describe('technique takes the material the pipe is made of', () => {
+  const argv = [
+    '--joint',
+    'J-118',
+    '--size',
+    '6',
+    '--schedule',
+    '40',
+    '--activity',
+    '40',
+    '--distance',
+    '48',
+    '--standoff',
+    '6.625',
+  ];
+
+  it('assumes carbon steel when none is given', () => {
+    expect(runCommand('technique', argv).text).toContain('carbon steel');
+  });
+
+  it('takes a different metal and prints it', () => {
+    const result = runCommand('technique', [...argv, '--material', 'STAINLESS']);
+    expect(result.text).toContain('austenitic stainless');
+  });
+
+  it('reads the chart at the steel the section behaves like', () => {
+    const result = runCommand('technique', [...argv, '--material', 'STAINLESS']);
+    expect(result.text).toContain('in steel');
+  });
+
+  it('marks the sheet not ready on a metal nobody stocks', () => {
+    const result = runCommand('technique', [...argv, '--material', 'LEAD']);
+    expect(result.code).toBe(1);
+    expect(result.text).toContain('NOT READY');
+  });
+});

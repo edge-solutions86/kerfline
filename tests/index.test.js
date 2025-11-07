@@ -106,3 +106,38 @@ describe('the surface covers every stage of a job', () => {
     }
   });
 });
+
+describe('the surface reaches every part of the package', () => {
+  it('exports something from every directory under src', () => {
+    // Not a count, a coverage check: each area of the package should be
+    // reachable without importing a file path.
+    const areas = {
+      job: ['makeJob', 'planDay', 'runAudit'],
+      isotope: ['isotope', 'activityAfter', 'halfValueLayerMm'],
+      geom: ['pipeSummary', 'resolveSetup', 'shotPlan'],
+      exposure: ['planExposure', 'planXray', 'latitudeIn', 'buildSheetSet'],
+      iqi: ['selectIqi', 'placementPlan', 'holeIqi', 'wireDiameterIn'],
+      density: ['densityLimits', 'judgeArea', 'calibrationRecord', 'makeReadingSet'],
+      film: ['checkIdentification', 'artifact', 'developmentMinutes', 'makeCassette'],
+      indication: ['indicationType', 'makeIndication', 'clusters', 'weldPositionOf'],
+      accept: ['judge', 'combine', 'maxDiscontinuityIn', 'elongatedLimitIn'],
+      joint: ['makeJoint', 'pipeSpec', 'makeRegister', 'makeProcedure', 'makeHeat'],
+      personnel: ['makeCertification', 'makePerson', 'makeTraining'],
+      repair: ['repairRate', 'makeAttempt'],
+      sampling: ['levelFor', 'selectJoints'],
+      safety: ['doseRateAt', 'collimator', 'makeSurvey', 'makeIncident'],
+      store: ['makeJournal', 'byKind', 'snapshotAt', 'migrateEntry', 'parseJournal'],
+      pipeline: ['planShot', 'gradeFilm', 'jointState', 'planReshoot'],
+      report: ['renderSheet', 'renderTechnique', 'renderCoverage', 'renderNcrs'],
+    };
+    for (const [area, names] of Object.entries(areas)) {
+      for (const name of names) {
+        expect(kerfline[name], `${area} needs ${name} on the surface`).toBeTypeOf('function');
+      }
+    }
+  });
+
+  it('is a good deal wider than it was when it only covered the shot', () => {
+    expect(Object.keys(kerfline).length).toBeGreaterThan(140);
+  });
+});

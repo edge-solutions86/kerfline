@@ -1,6 +1,6 @@
 {
   "name": "kerfline",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Radiographic technique planning and film interpretation for weld inspection",
   "type": "module",
   "license": "UNLICENSED",

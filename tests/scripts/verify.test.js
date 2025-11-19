@@ -9,7 +9,7 @@ const source = readFileSync(join(here, '..', '..', 'scripts', 'verify.mjs'), 'ut
 
 describe('the stage list', () => {
   it('runs the cheap checks before the expensive ones', () => {
-    expect(stageNames()).toEqual(['format', 'lint', 'test', 'coverage', 'smoke']);
+    expect(stageNames()).toEqual(['format', 'lint', 'test', 'coverage', 'release', 'smoke']);
   });
 
   it('gives every stage a command and a description', () => {

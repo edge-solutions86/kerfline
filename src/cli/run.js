@@ -1,5 +1,6 @@
 import { isKerflineError } from '../errors.js';
 import { commandNames, runCommand, commandUsage, overallUsage } from './commands.js';
+import { VERSION } from '../util/version.js';
 
 /**
  * Turning arguments into text and an exit code.
@@ -25,7 +26,7 @@ export function exitCodes() {
 }
 
 export function version() {
-  return '0.3.0';
+  return VERSION;
 }
 
 /** Format an error for the terminal, without a stack trace. */

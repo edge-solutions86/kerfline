@@ -42,6 +42,12 @@ const STAGES = [
     args: ['vitest', 'run', '--coverage'],
   },
   {
+    name: 'release',
+    describe: 'the version, the entry points and the shipped file list line up',
+    command: 'node',
+    args: ['-e', "import('./src/util/version.js').then((m) => console.log(m.VERSION))"],
+  },
+  {
     name: 'smoke',
     describe: 'the command line answers for real',
     command: 'node',

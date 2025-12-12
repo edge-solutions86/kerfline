@@ -1,6 +1,6 @@
 import { BadInput } from '../errors.js';
-import { round } from '../util/num.js';
 import { requireArray, requireWhole, requireAbove } from '../util/guard.js';
+import { rateOf, itemsToReach } from '../util/rate.js';
 
 /**
  * Welder repair rate.
@@ -45,7 +45,7 @@ export function repairRate(joints) {
   return {
     shot: counted.length,
     repaired,
-    rate: counted.length === 0 ? 0 : round(repaired / counted.length, 4),
+    rate: rateOf(repaired, counted.length),
   };
 }
 
@@ -123,6 +123,5 @@ export function cleanJointsToRecover(joints, options = {}) {
   const measured = repairRate(joints);
   if (measured.shot === 0 || measured.rate <= threshold) return 0;
   // repaired / (shot + n) <= threshold
-  const needed = Math.ceil(measured.repaired / threshold - measured.shot);
-  return Math.max(0, needed);
+  return itemsToReach(measured.repaired, measured.shot, threshold);
 }

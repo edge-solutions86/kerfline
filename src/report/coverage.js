@@ -9,6 +9,7 @@ import {
   jointsToShoot,
   coverageAchieved,
 } from '../sampling/coverage.js';
+import { rateOf } from '../util/rate.js';
 
 /**
  * The coverage report.
@@ -62,7 +63,7 @@ function groupCoverage(joints, keyOf, level) {
       total: counts.total,
       shot: counts.shot,
       required: jointsToShoot(counts.total, level),
-      fraction: counts.total === 0 ? 0 : round(counts.shot / counts.total, 4),
+      fraction: rateOf(counts.shot, counts.total),
       compliant: counts.shot >= jointsToShoot(counts.total, level),
     }))
     .sort((a, b) => a.fraction - b.fraction || a.key.localeCompare(b.key));

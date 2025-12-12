@@ -1,6 +1,6 @@
 import { BadInput } from '../errors.js';
-import { round } from '../util/num.js';
 import { requireArray, requireWhole, requireAtLeast } from '../util/guard.js';
+import { rateOf } from '../util/rate.js';
 
 /**
  * How much of a job gets radiographed.
@@ -89,7 +89,7 @@ export function coverageAchieved({ totalJoints, shotJoints, level }) {
     shotJoints,
     requiredJoints: required,
     requiredFraction: levelFraction(level),
-    achievedFraction: totalJoints === 0 ? 0 : round(shotJoints / totalJoints, 4),
+    achievedFraction: rateOf(shotJoints, totalJoints),
     compliant: shotJoints >= required,
     shortBy: Math.max(0, required - shotJoints),
   };

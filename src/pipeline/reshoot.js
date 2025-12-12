@@ -5,6 +5,7 @@ import { requireDay } from '../util/dates.js';
 import { append } from '../store/journal.js';
 import { byKind } from '../store/query.js';
 import { reshootFactor } from '../exposure/aim.js';
+import { rateOf } from '../util/rate.js';
 
 /**
  * What to change before shooting it again.
@@ -141,7 +142,7 @@ export function reshootRate(journal) {
   return {
     shots: shots.length,
     reshoots: reshoots.length,
-    rate: shots.length === 0 ? 0 : round(reshoots.length / shots.length, 4),
+    rate: rateOf(reshoots.length, shots.length),
   };
 }
 

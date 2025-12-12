@@ -1,5 +1,4 @@
 import { BadInput } from '../errors.js';
-import { round } from '../util/num.js';
 import { requireArray } from '../util/guard.js';
 import { requireDay } from '../util/dates.js';
 import { keyValueBlock, renderTable, rule } from '../util/text.js';
@@ -7,6 +6,7 @@ import { between } from '../store/query.js';
 import { compareIds } from '../util/ids.js';
 import { missingSurveys } from '../safety/survey.js';
 import { block, heading, page, pageWidth } from './layout.js';
+import { rateOf } from '../util/rate.js';
 
 /**
  * The daily field report.
@@ -72,7 +72,7 @@ export function dailyTotals(report) {
     read: report.verdicts.length,
     accepted: report.verdicts.length - repaired,
     repaired,
-    rate: report.verdicts.length === 0 ? 0 : round(repaired / report.verdicts.length, 4),
+    rate: rateOf(repaired, report.verdicts.length),
   };
 }
 

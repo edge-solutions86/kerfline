@@ -6,6 +6,7 @@ import { compareIds } from '../util/ids.js';
 import { renderTable, keyValueBlock, wrap } from '../util/text.js';
 import { heading, block, page, pageWidth } from './layout.js';
 import { shuffle, seedFrom } from '../sampling/select.js';
+import { rateOf } from '../util/rate.js';
 
 /**
  * Second reading.
@@ -90,7 +91,8 @@ export function agreement(reviews) {
     reviewed: reviews.length,
     agreed,
     disagreements,
-    rate: reviews.length === 0 ? 1 : round(agreed / reviews.length, 4),
+    // Nothing disagreed with is full agreement, not none of it.
+    rate: rateOf(agreed, reviews.length, { whenEmpty: 1 }),
     lenient,
     strict,
     oneSided: disagreements > 0 && (lenient === 0 || strict === 0),

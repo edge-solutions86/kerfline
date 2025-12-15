@@ -156,3 +156,4 @@ export { buildDaily, renderDaily, dailyTotals } from './report/daily.js';
 export { raiseNcr, closeNcr, overdueNcrs, renderNcrs } from './report/nonconformance.js';
 export { selectForReview, makeReview, agreement, renderReview } from './report/filmreview.js';
 export { toCsv, exportRegister, verifyChecksum } from './report/export.js';
+export { buildPack, renderPack, packContents, issuable } from './report/pack.js';

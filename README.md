@@ -131,7 +131,3 @@ Numbers are rounded half away from zero through their decimal text, and they
 are written on sheets and journal lines with the shortest digits that read
 back as the same value, so a wall prints as 0.280 where a sheet asks for three
 places and a journal checksum does not depend on how a number was computed.
-
-## History
-
-kerfline was first written in JavaScript and ported to Java 21 in November 2026.

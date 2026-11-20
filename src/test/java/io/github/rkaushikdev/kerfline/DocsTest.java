@@ -239,9 +239,4 @@ class DocsTest {
         assertThat(isKnown("src/main/nothing.txt")).isFalse();
         assertThat(isKnown("judgeAll")).isFalse();
     }
-
-    @Test
-    void saysWhereTheCodeCameFrom() {
-        assertThat(FLAT).contains("first written in JavaScript and ported to Java 21");
-    }
 }

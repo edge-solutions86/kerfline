@@ -18,13 +18,17 @@ import picocli.CommandLine.Spec;
  *
  * <p>Everything that can be decided is decided in {@link Run}, which returns text and a status
  * rather than printing. What is left here is the three things that cannot be tested without a
- * process: writing to the two streams and setting the exit status. Picocli hands every argument
- * through untouched, in order and with no help, version or argument file handling of its own, so
- * {@link Run} sees exactly what was typed.
+ * process: writing to the two streams and setting the exit status. Picocli accepts every argument
+ * with no help, version or argument file handling of its own, and {@link Run} is handed the
+ * arguments exactly as they were typed, a leading {@code --} included.
  */
 @Command(name = "kerf", description = "Radiographic technique planning and film interpretation for weld inspection.")
 public final class Kerf implements Callable<Integer> {
 
+    /**
+     * Declared so the parser accepts anything at all; {@link #call} reads the arguments back from
+     * the parse result as typed, because the parser itself drops a leading {@code --}.
+     */
     @Parameters(
             arity = "0..*",
             paramLabel = "<argument>",
@@ -46,8 +50,8 @@ public final class Kerf implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        CliResult result = Run.run(arguments);
         CommandLine commandLine = spec.commandLine();
+        CliResult result = Run.run(commandLine.getParseResult().originalArgs());
         write(commandLine.getOut(), result.out());
         write(commandLine.getErr(), result.err());
         return result.code();

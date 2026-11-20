@@ -87,6 +87,13 @@ class KerfTest {
     }
 
     @Test
+    void handsALeadingDoubleDashToTheToolAsTyped() {
+        Ran ran = kerf("--", "sources");
+        assertThat(ran.err()).contains("no command --");
+        assertThat(ran.code()).isEqualTo(2);
+    }
+
+    @Test
     void neverWritesToBothStreams() {
         for (String[] args : new String[][] {{}, {"--help"}, {"shoot"}, {"technique"}, {"sources"}}) {
             Ran ran = kerf(args);

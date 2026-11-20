@@ -36,6 +36,9 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.named('compileJava', JavaCompile) {
 	options.compilerArgs << "-Aproject=${project.group}/${project.name}"
+	// picocli-codegen reads the picocli annotations to write reflection config without
+	// claiming them, which the processing lint would otherwise report on every compile.
+	options.compilerArgs << '-Xlint:-processing'
 }
 
 application {

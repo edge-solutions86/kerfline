@@ -145,7 +145,7 @@ public final class Num {
         if (y0 <= 0 || y1 <= 0) {
             throw new BadInputException("log interpolation needs positive endpoints", Details.of("y0", y0, "y1", y1));
         }
-        return Math.exp(interpolate(x, x0, Math.log(y0), x1, Math.log(y1)));
+        return StrictMath.exp(interpolate(x, x0, StrictMath.log(y0), x1, StrictMath.log(y1)));
     }
 
     /** The sum, left to right; nought for an empty list. */
@@ -333,7 +333,7 @@ public final class Num {
                 return exponent;
             }
         }
-        return Math.log(value) / Math.log(2);
+        return StrictMath.log(value) / StrictMath.log(2);
     }
 
     /**

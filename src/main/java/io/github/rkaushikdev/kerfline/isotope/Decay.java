@@ -14,7 +14,7 @@ import java.util.List;
  */
 public final class Decay {
 
-    private static final double LN2 = Math.log(2);
+    private static final double LN2 = StrictMath.log(2);
     private static final int DEFAULT_PLACES = 2;
 
     private Decay() {}
@@ -28,7 +28,7 @@ public final class Decay {
     public static double decayFactor(double halfLifeDays, double elapsedDays) {
         Guard.requirePositive(halfLifeDays, "half life");
         Guard.requireNumber(elapsedDays, "elapsed days");
-        return Math.exp(-decayConstant(halfLifeDays) * elapsedDays);
+        return StrictMath.exp(-decayConstant(halfLifeDays) * elapsedDays);
     }
 
     public static double halfLivesElapsed(double halfLifeDays, double elapsedDays) {
@@ -60,7 +60,7 @@ public final class Decay {
         Guard.requirePositive(startCi, "assay activity");
         Guard.requirePositive(targetCi, "target activity");
         Guard.requirePositive(halfLifeDays, "half life");
-        return (halfLifeDays * Math.log(startCi / targetCi)) / LN2;
+        return (halfLifeDays * StrictMath.log(startCi / targetCi)) / LN2;
     }
 
     /**

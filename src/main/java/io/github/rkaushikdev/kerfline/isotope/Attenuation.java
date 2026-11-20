@@ -69,7 +69,7 @@ public final class Attenuation {
                     "shield thickness must not be negative", Details.of("thicknessMm", thicknessMm));
         }
         double hvl = halfValueLayerMm(idOrLabel, material);
-        return Math.pow(2, -thicknessMm / hvl);
+        return StrictMath.pow(2, -thicknessMm / hvl);
     }
 
     /** The shield thickness that cuts the beam by the given factor. */

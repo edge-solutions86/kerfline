@@ -160,7 +160,7 @@ public final class Survey {
 
     /** What a reading implies about the source, rate times distance squared. */
     private static double strength(Reading reading) {
-        return reading.rateMrPerHour() * Math.pow(reading.atFt(), 2);
+        return reading.rateMrPerHour() * StrictMath.pow(reading.atFt(), 2);
     }
 
     /** Any reading that puts somebody in a high radiation area. */

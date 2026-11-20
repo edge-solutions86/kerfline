@@ -102,7 +102,7 @@ public final class Boundary {
         Guard.requireAbove(availableFt, 0, "available space");
         Guard.requireAtLeast(margin, 1, "margin");
         double trialFt = barricadeDistanceFt(new Camera(isotopeId, TRIAL_CI), margin);
-        return Num.round(TRIAL_CI * Math.pow(availableFt / trialFt, 2), 2);
+        return Num.round(TRIAL_CI * StrictMath.pow(availableFt / trialFt, 2), 2);
     }
 
     public static double combinedBoundaryFt(List<Camera> sources) {

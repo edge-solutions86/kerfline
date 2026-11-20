@@ -1,4 +1,4 @@
-package io.github.rkaushikdev.kerfline.joint;
+package io.github.rkaushikdev.kerfline.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

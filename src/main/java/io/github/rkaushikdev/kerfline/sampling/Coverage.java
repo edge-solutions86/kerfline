@@ -4,6 +4,7 @@ import io.github.rkaushikdev.kerfline.errors.BadInputException;
 import io.github.rkaushikdev.kerfline.errors.Details;
 import io.github.rkaushikdev.kerfline.util.Guard;
 import io.github.rkaushikdev.kerfline.util.Rate;
+import io.github.rkaushikdev.kerfline.util.RootCollation;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;

@@ -45,7 +45,7 @@ public final class Coverage {
         Geometry geometry = geometry(odIn, sourceToObjectIn);
         Guard.requireNumber(offsetDegrees, "offset in degrees");
         double phi = Math.abs(offsetDegrees) / DEG;
-        double tangent = Math.acos(geometry.radius() / geometry.axis());
+        double tangent = StrictMath.acos(geometry.radius() / geometry.axis());
         if (phi >= tangent) {
             throw new BadInputException(
                     "that offset is past the tangent point, the beam misses the pipe",
@@ -53,21 +53,21 @@ public final class Coverage {
         }
         double radius = geometry.radius();
         double axis = geometry.axis();
-        double numerator = axis * Math.cos(phi) - radius;
-        double denominator = Math.sqrt(radius * radius + axis * axis - 2 * radius * axis * Math.cos(phi));
-        return Math.acos(numerator / denominator) * DEG;
+        double numerator = axis * StrictMath.cos(phi) - radius;
+        double denominator = Math.sqrt(radius * radius + axis * axis - 2 * radius * axis * StrictMath.cos(phi));
+        return StrictMath.acos(numerator / denominator) * DEG;
     }
 
     /** How much longer the path through the wall is than the wall itself. */
     public static double thicknessRatio(double odIn, double sourceToObjectIn, double offsetDegrees) {
         double beta = incidenceAngleDegrees(odIn, sourceToObjectIn, offsetDegrees);
-        return 1 / Math.cos(beta / DEG);
+        return 1 / StrictMath.cos(beta / DEG);
     }
 
     /** The offset at which the beam grazes the pipe and stops entering it. */
     public static double tangentOffsetDegrees(double odIn, double sourceToObjectIn) {
         Geometry geometry = geometry(odIn, sourceToObjectIn);
-        return Math.acos(geometry.radius() / geometry.axis()) * DEG;
+        return StrictMath.acos(geometry.radius() / geometry.axis()) * DEG;
     }
 
     /**

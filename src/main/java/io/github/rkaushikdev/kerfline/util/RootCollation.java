@@ -1,21 +1,22 @@
-package io.github.rkaushikdev.kerfline.sampling;
+package io.github.rkaushikdev.kerfline.util;
 
 import java.util.Comparator;
 
 /**
- * The order a person reads a list of labels in, as the root locale collates them: whitespace
- * before punctuation, punctuation before digits, digits before letters, letters compared without
+ * The order a person reads a list of labels in, as the root locale collates them, which is how
+ * the reports have always sorted welder stencils and size labels: whitespace before punctuation, punctuation before digits, digits before letters, letters compared without
  * regard to case first and with lower case ahead of upper case only to break a tie. Unlike {@link
  * java.text.Collator}, spaces and punctuation are not ignored, so {@code "6 in sch 40"} sorts ahead
  * of {@code "6.625 in OD"}.
  */
-final class RootCollation {
+public final class RootCollation {
 
-    static final Comparator<String> ORDER = RootCollation::compare;
+    public static final Comparator<String> ORDER = RootCollation::compare;
 
     private RootCollation() {}
 
-    static int compare(String a, String b) {
+    /** Negative, zero or positive as {@code a} reads before, level with or after {@code b}. */
+    public static int compare(String a, String b) {
         int shared = Math.min(a.length(), b.length());
         for (int i = 0; i < shared; i++) {
             int order = Long.compare(primary(a.charAt(i)), primary(b.charAt(i)));

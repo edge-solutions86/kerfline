@@ -1,5 +1,9 @@
-node_modules/
-coverage/
-scratch/
+build/
+.gradle/
+out/
+target/
+.idea/
+*.iml
+.vscode/
 *.log
 .DS_Store

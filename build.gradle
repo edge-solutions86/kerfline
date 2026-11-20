@@ -1,0 +1,108 @@
+plugins {
+	id 'java'
+	id 'application'
+	id 'jacoco'
+	id 'com.diffplug.spotless' version '7.0.4'
+}
+
+group = 'io.github.rkaushikdev'
+version = '1.0.0'
+description = 'Radiographic technique planning and film interpretation for weld inspection'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'info.picocli:picocli:4.7.7'
+	annotationProcessor 'info.picocli:picocli-codegen:4.7.7'
+
+	testImplementation platform('org.junit:junit-bom:5.12.2')
+	testImplementation 'org.junit.jupiter:junit-jupiter'
+	testImplementation 'org.assertj:assertj-core:3.27.7'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+	options.compilerArgs << '-Xlint:all'
+}
+
+tasks.named('compileJava', JavaCompile) {
+	options.compilerArgs << "-Aproject=${project.group}/${project.name}"
+}
+
+application {
+	mainClass = 'io.github.rkaushikdev.kerfline.cli.Kerf'
+	applicationName = 'kerf'
+}
+
+tasks.named('jar', Jar) {
+	manifest {
+		attributes(
+				'Implementation-Title': project.name,
+				'Implementation-Version': project.version,
+				'Main-Class': application.mainClass.get()
+				)
+	}
+}
+
+tasks.named('test', Test) {
+	useJUnitPlatform()
+	// The README and source hygiene checks read files relative to the project root.
+	workingDir = projectDir
+	testLogging {
+		events 'failed'
+		exceptionFormat = 'full'
+	}
+	finalizedBy tasks.named('jacocoTestReport')
+}
+
+jacoco {
+	toolVersion = '0.8.13'
+}
+
+tasks.named('jacocoTestReport', JacocoReport) {
+	dependsOn tasks.named('test')
+	reports {
+		xml.required = true
+		html.required = true
+	}
+}
+
+tasks.named('jacocoTestCoverageVerification', JacocoCoverageVerification) {
+	dependsOn tasks.named('test')
+	violationRules {
+		rule {
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.80
+			}
+		}
+	}
+}
+
+tasks.named('check') {
+	dependsOn tasks.named('jacocoTestCoverageVerification')
+}
+
+spotless {
+	java {
+		target 'src/**/*.java', 'scripts/**/*.java'
+		palantirJavaFormat()
+		removeUnusedImports()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+	groovyGradle {
+		target '*.gradle'
+		greclipse()
+	}
+}

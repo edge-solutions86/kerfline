@@ -1,5 +1,10 @@
 # kerfline
 
+[![CI](https://github.com/rkaushik-dev/kerfline/actions/workflows/ci.yml/badge.svg)](https://github.com/rkaushik-dev/kerfline/actions/workflows/ci.yml)
+![Java 21](https://img.shields.io/badge/Java-21-007396)
+![Gradle](https://img.shields.io/badge/build-Gradle-02303A)
+![JUnit 5](https://img.shields.io/badge/tests-JUnit%205-25A162)
+
 Radiographic technique planning and film interpretation for weld inspection.
 
 This is the back office of a radiography crew. A joint gets welded, somebody

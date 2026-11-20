@@ -29,9 +29,19 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+sourceSets {
+	test {
+		java {
+			// scripts/Verify.java runs on its own as `java scripts/Verify.java`; compiling it
+			// with the tests lets them check the stage plan without running any of it.
+			srcDir 'scripts'
+		}
+	}
+}
+
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
-	options.compilerArgs << '-Xlint:all'
+	options.compilerArgs << '-Xlint:all' << '-Werror'
 }
 
 tasks.named('compileJava', JavaCompile) {

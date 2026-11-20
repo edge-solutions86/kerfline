@@ -1,0 +1,22 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21', cache: gradle }
+      - run: ./gradlew build
+      - name: the tool answers
+        run: |
+          ./gradlew installDist
+          build/install/kerf/bin/kerf --version
+          build/install/kerf/bin/kerf sources
+          build/install/kerf/bin/kerf technique --joint J-118 --size 6 --schedule 40 \
+            --activity 40 --distance 48 --standoff 6.625
+      - name: a rejected weld exits one
+        run: |
+          set +e
+          build/install/kerf/bin/kerf judge --size 6 --schedule 40 CRACK:0.2:2
+          test $? -eq 1

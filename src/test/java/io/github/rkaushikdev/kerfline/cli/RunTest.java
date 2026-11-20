@@ -5,7 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.github.rkaushikdev.kerfline.errors.BadInputException;
 import io.github.rkaushikdev.kerfline.errors.Details;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -188,6 +191,35 @@ class RunTest {
         void joinsAListOfKnownValues() {
             String text = Run.renderError(new BadInputException("nope", Details.of("known", List.of("a", "b"))));
             assertThat(text).contains("known: a, b");
+        }
+
+        @Test
+        void writesAMapDetailAsJsonInTheOrderItWasWritten() {
+            Map<String, Object> got = new LinkedHashMap<>();
+            got.put("size", Optional.empty());
+            got.put("od", 6.625);
+            got.put("films", List.of(1, "B"));
+            got.put("ready", true);
+            got.put("note", null);
+            got.put("wall", Optional.of(Double.NaN));
+            String text = Run.renderError(new BadInputException("nope", Details.of("got", got)));
+            assertThat(text)
+                    .isEqualTo(
+                            "kerf: nope\n  got: {\"od\":6.625,\"films\":[1,\"B\"],\"ready\":true,\"note\":null,\"wall\":null}");
+        }
+
+        @Test
+        void leavesOutADetailThatWasNeverGiven() {
+            String text = Run.renderError(new BadInputException(
+                    "nope", Details.of("option", Optional.empty(), "got", Optional.of("thick"), "seen", null)));
+            assertThat(text).isEqualTo("kerf: nope\n  got: thick");
+        }
+
+        @Test
+        void namesWhatWasGivenWhenTheGeometryIsIncomplete() {
+            CliResult result = Run.run(List.of("technique", "--od", "6.625", "--activity", "40", "--distance", "48"));
+            assertThat(result.err()).contains("  got: {\"od\":6.625}");
+            assertThat(result.code()).isEqualTo(CODES.misuse());
         }
 
         @Test
